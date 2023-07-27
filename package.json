@@ -1,0 +1,32 @@
+{
+  "name": "chic.js",
+  "version": "0.7.0",
+  "description": "CLI for rapidly scaffolding SvelteKit apps",
+  "main": "index.js",
+  "bin": {
+    "chic": "./index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chic/chic.git"
+  },
+  "keywords": [
+    "chic",
+    "chic.js",
+    "svelte",
+    "sveltekit"
+  ],
+  "author": "Mark Schellhas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/markschellhas/chic.js/issues"
+  },
+  "homepage": "https://github.com/markschellhas/chic.js#readme",
+  "dependencies": {
+    "sade": "^1.8.1"
+  }
+}
