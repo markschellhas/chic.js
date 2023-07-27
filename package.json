@@ -1,6 +1,6 @@
 {
   "name": "chic.js",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "CLI for rapidly scaffolding SvelteKit apps",
   "main": "index.js",
   "bin": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chic/chic.git"
+    "url": "git+https://github.com/markschellhas/chic.js.git"
   },
   "keywords": [
     "chic",
@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://github.com/markschellhas/chic.js/issues"
   },
-  "homepage": "https://github.com/markschellhas/chic.js#readme",
+  "homepage": "https://www.chicjs.org",
   "dependencies": {
     "sade": "^1.8.1"
   }
