@@ -107,7 +107,7 @@ prog
         const allOptions = [options, ...opts._].join(' ');
         createModel(what, allOptions);
         addModelToDBFile(what);
-        createFormComponent(what, allOptions);
+        createFormComponent(what, ['new', '[id]/edit'], allOptions);
         createRoutePages(what, ['', 'new', '[id]', '[id]/edit'], allOptions);
         createAPIRoutes(what, ['', '[id]']);
         createController(what);
