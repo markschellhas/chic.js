@@ -7,7 +7,7 @@ import {
     addModelToDBFile, createAPIRoutes, createController, 
     createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent } from './lib/functions.js';
 import { spawn } from 'child_process';
-import { destroyButtonTemplate } from './lib/templates.js';
+import { destroyButtonTemplate } from './lib/templates/component_templates.js';
 
 const prog = sade('chic');
 

@@ -1,4 +1,4 @@
-import { routeServerIndexPageTemplate } from "../lib/templates";
+import { routeServerIndexPageTemplate } from "../lib/templates/page_templates";
 
 describe('route server index page template', () => {
     it('return the template in the correct format', () => {
