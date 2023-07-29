@@ -5,8 +5,9 @@ import sade from 'sade';
 
 import { 
     addModelToDBFile, createAPIRoutes, createController, 
-    createModel, createRoutePages, init, createFormComponent } from './lib/functions.js';
+    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent } from './lib/functions.js';
 import { spawn } from 'child_process';
+import { destroyButtonTemplate } from './lib/templates.js';
 
 const prog = sade('chic');
 
@@ -108,6 +109,7 @@ prog
         createModel(what, allOptions);
         addModelToDBFile(what);
         createFormComponent(what, ['new', '[id]/edit'], allOptions);
+        writeDeleteButtonComponent(destroyButtonTemplate); // TODO: only create once.
         createRoutePages(what, ['', 'new', '[id]', '[id]/edit'], allOptions);
         createAPIRoutes(what, ['', '[id]']);
         createController(what);
