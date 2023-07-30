@@ -1,7 +1,7 @@
 # Change Log
 All notable changes to this project will be documented in this file. 
 
-## [unreleased] - 2023-07-29
+## [0.10.0] - 2023-07-30
  
 To upgrade simply reinstall the package:
  
@@ -13,6 +13,8 @@ npm install -g chic.js
 - `.npmignore` file added to prevent unnecessary files being published to npm
 - Updated website url in `package.json`
 - Comments in MVC files
+- Adds more documentation
+- Adds `routes` command to update routes endpoint
 
  
 ### Changed
