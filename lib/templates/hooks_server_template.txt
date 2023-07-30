@@ -1,0 +1,21 @@
+import chicConfig from '../chic.json';
+/** @type {import('@sveltejs/kit').Handle} */
+export async function handle({ event, resolve }) {
+    if (event.url.pathname.startsWith('/routes')) {
+        const routes = chicConfig.routes;
+
+        let html = '<table><tr><th>Method</th><th>Path</th><th>Description</th><th>Action</th></tr>';
+        for (const route of routes) {
+            html += `<tr><td>${route.method}</td><td>${route.path}</td><td>${route.description}</td><td>${route.action}</td></tr>`;
+        }
+        html += '</table>';
+        return new Response(html, {
+            headers: {
+                'content-type': 'text/html',
+            },
+        });
+    }
+
+    const response = await resolve(event);
+    return response;
+}

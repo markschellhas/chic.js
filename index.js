@@ -3,9 +3,10 @@
 import path from 'path';
 import sade from 'sade';
 
-import { 
-    addModelToDBFile, createAPIRoutes, createController, 
-    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent } from './lib/functions.js';
+import {
+    addModelToDBFile, createAPIRoutes, createController,
+    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile
+} from './lib/functions.js';
 import { spawn } from 'child_process';
 import { destroyButtonTemplate } from './lib/templates/component_templates.js';
 
@@ -113,6 +114,15 @@ prog
         createRoutePages(what, ['', 'new', '[id]', '[id]/edit'], allOptions);
         createAPIRoutes(what, ['', '[id]']);
         createController(what);
+        createHooksServerFile();
+    });
+
+prog
+    .command('routes')
+    .describe('Will update routes for endpoint.')
+    // .option('-d, --database', 'What kind of database should be used?')
+    .action((what, options, opts) => {
+        createHooksServerFile();
     });
 
 prog
