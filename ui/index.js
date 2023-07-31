@@ -1,0 +1,1 @@
+export { RoutesTable } from "./renderedRouteTable.js";

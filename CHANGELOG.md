@@ -1,6 +1,21 @@
 # Change Log
 All notable changes to this project will be documented in this file. 
 
+## [0.11.0] - 2023-07-31
+
+To upgrade simply reinstall the package:
+ 
+```bash
+npm install -g chic.js
+```
+
+### Added
+- ui hook for `routes` endpoint
+- `RoutesTable` UI module. To use `import { RoutesTable } from 'chic.js/ui'` in `hooks.server.js` file.
+
+### Changed
+- Improved `routes` UI
+
 ## [0.10.0] - 2023-07-30
  
 To upgrade simply reinstall the package:
