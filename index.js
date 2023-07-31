@@ -13,7 +13,7 @@ import { destroyButtonTemplate } from './lib/templates/component_templates.js';
 const prog = sade('chic');
 
 prog
-    .version('1.0.1')
+    .version('1.0.2')
 
 prog
     .command('new <name>')

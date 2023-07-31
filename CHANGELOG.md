@@ -1,6 +1,26 @@
 # Change Log
 All notable changes to this project will be documented in this file. 
 
+To upgrade simply reinstall the package:
+ 
+```bash
+npm install -g chic.js
+```
+
+or in your project directory:
+
+```bash
+npm install chic.js
+```
+
+## [1.0.2] - 2023-07-31
+
+Minor bug fixes
+
+### Changed
+- removes `test.html`
+
+
 ## [1.0.1] - 2023-07-31
 
 To upgrade simply reinstall the package:
