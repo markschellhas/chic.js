@@ -13,7 +13,7 @@ import { destroyButtonTemplate } from './lib/templates/component_templates.js';
 const prog = sade('chic');
 
 prog
-    .version('0.11.0')
+    .version('1.0.1')
 
 prog
     .command('new <name>')
@@ -41,7 +41,24 @@ prog
                 // Run init function
                 init();
 
-                // Install sequelize
+                // Install chic.js as dependency:
+                console.log(`> Installing chic.js in project ${name}`);
+                const installChicProcess = spawn('npm', ['install', 'chic.js', '--save'], {
+                    stdio: 'inherit',
+                    shell: true
+                });
+
+                installChicProcess.on('error', (error) => {
+                    console.error(`Error installing chic.js: ${error}`);
+                });
+
+                installChicProcess.on('exit', (code) => {
+                    if (code !== 0) {
+                        console.error(`The process exited with code ${code}`);
+                    } else {
+                        console.log('Chic.js installed successfully');
+
+                        // Install sequelize
                 console.log(`> Installing sequelize in project ${name}`);
                 const installSequelizeProcess = spawn('npm', ['install', 'sequelize', '--save'], {
                     stdio: 'inherit',
@@ -90,6 +107,8 @@ prog
                                 console.log('\x1b[36m%s\x1b[0m', `----------------------------------------`);
                             }
                         });
+                    }
+                });
                     }
                 });
 

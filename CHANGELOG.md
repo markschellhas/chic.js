@@ -1,6 +1,23 @@
 # Change Log
 All notable changes to this project will be documented in this file. 
 
+## [1.0.1] - 2023-07-31
+
+To upgrade simply reinstall the package:
+ 
+```bash
+npm install -g chic.js
+```
+
+or using npx:
+
+```bash
+npx chic new my-app
+```
+
+### Added
+- `chic.js` now automatically added as a dependency so that it can be used in `hooks.server.js` file without having to install it as a dependency in the project.
+
 ## [0.11.0] - 2023-07-31
 
 To upgrade simply reinstall the package:
