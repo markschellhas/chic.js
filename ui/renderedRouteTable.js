@@ -1,4 +1,12 @@
-export const RoutesTable = (routes) => {
+export const RoutesTable = (routes, isError, errorCode) => {
+    const buildErrorMessage = (errorCode) => {
+        if (errorCode === 404) {
+            return "Page not found!\n These are the routes that are configured in chic.json. You can edit this file to add more routes:"
+        } else {
+            return "Something went wrong.\n Please check your routes in chic.json"
+        } 
+    }
+    const errorMessage = buildErrorMessage(errorCode);
     return `
 <!DOCTYPE html>
 <html lang="en">
@@ -44,6 +52,7 @@ export const RoutesTable = (routes) => {
 <body>
     <div class="chicjs_routes">
         <h1 class="is-size-3">Routes</h1>
+        ${isError ? `<div class="notification is-danger">${errorMessage}</div>` : ''}
         <p class="pt-4 pb-4">These are the routes that are configured in chic.json. You can edit this file to add more
             routes.</p>
         <div class="field">

@@ -12,6 +12,12 @@ or in your project directory:
 ```bash
 npm install chic.js
 ```
+## [1.0.3] - 2023-08-02
+
+Minor bug fixes
+
+### Changed
+- adds error notice message to `renderedRouteTable`
 
 ## [1.0.2] - 2023-07-31
 

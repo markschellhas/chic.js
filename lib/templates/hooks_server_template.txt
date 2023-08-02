@@ -3,9 +3,20 @@ import { RoutesTable } from 'chic.js/ui';
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-    if (event.url.pathname.startsWith('/routes')) {
+    if (event.url.pathname.startsWith('/routes') || !event.route.id) {
+        let errorCode = null;
+        let isError = false;
+        if (event.url.pathname.startsWith('/routes') && !event.route.id) {
+            errorCode = 0;
+        }
+        if (!event.url.pathname.startsWith('/routes') && !event.route.id) {
+            isError = true;
+            errorCode = 404;
+        }
+        errorCode = event.url.pathname.startsWith('/routes')? 200 : 404;
         const routes = chicConfig.routes;
-        return new Response(RoutesTable(routes), {
+
+        return new Response(RoutesTable(routes, isError, errorCode), {
             headers: {
                 'content-type': 'text/html',
             },
