@@ -9,18 +9,22 @@ import {
 } from './lib/functions.js';
 import { spawn } from 'child_process';
 import { destroyButtonTemplate } from './lib/templates/component_templates.js';
+import { styledBy } from './lib/helpers.js';
 
 const prog = sade('chic');
 
 prog
-    .version('1.0.2')
+    .version('1.1.0')
 
 prog
     .command('new <name>')
-    .describe('Create a new Sveltekit app.')
-    .action((name) => {
+    .describe('Create a new Sveltekit app. To add styles, add "styled with tailwind", for example.')
+    .example('new myapp')
+    .example('new myapp styled with tailwind')
+    .action((name, options, opts) => {
         console.log('\x1b[36m%s\x1b[0m', `• Creating a new Sveltekit project named ${name}`);
-
+        const [ isStyled, styleFrameworkName, styleInstallCommand, styleDocsURL ] = styledBy(options);
+        
         const createSvelteProcess = spawn('npm', ['create', 'svelte@latest', name], {
             stdio: 'inherit', // this will show the live output of the command
             shell: true
@@ -93,6 +97,9 @@ prog
                                 console.log('Sqlite3 installed successfully');
                                 console.log('\x1b[36m%s\x1b[0m', `----------------------------------------`);
                                 console.log("Project created successfully!");
+                                if (isStyled) {
+                                    addStylesToProject(styleFrameworkName, styleInstallCommand, styleDocsURL);
+                                }
                                 console.log(`
                                 
 🌟 Next steps:
@@ -124,7 +131,7 @@ prog
     // .option('-d, --database', 'What kind of database should be used?')
     .action((what, options, opts) => {
         console.log(`> Scaffolding a new ${what}`);
-        console.log('> Model fields', options);
+        // console.log('> Model fields', options);
         const allOptions = [options, ...opts._].join(' ');
         createModel(what, allOptions);
         addModelToDBFile(what);
@@ -171,3 +178,35 @@ prog
     });
 
 prog.parse(process.argv);
+
+/**
+ * 
+ * @param {String} styleFrameworkName 
+ * @param {Array} styleInstallCommand 
+ * @param {String} styleDocsURL 
+ */
+function addStylesToProject(styleFrameworkName, styleInstallCommand, styleDocsURL) {
+    console.log('\x1b[36m%s\x1b[0m', `• Styling the project with ${styleFrameworkName}`);
+    console.log('\x1b[36m%s\x1b[0m', `• Installing ${styleFrameworkName}...`);
+    let styleCmnd = styleInstallCommand.split(' ');
+    let styledOptions = styleCmnd.slice(1);
+    console.log(styleCmnd);
+    console.log(styledOptions);
+    const installStyleProcess = spawn(styleCmnd[0], styledOptions, {
+        stdio: 'inherit',
+        shell: true
+    });
+    
+    installStyleProcess.on('error', (error) => {
+        console.error(`Error installing ${styleFrameworkName}: ${error}`);
+    });
+
+    installStyleProcess.on('exit', (code) => {
+        if (code !== 0) {
+            console.error(`The process exited with code ${code}`);
+        } else {
+            console.log(`${styleFrameworkName} installed successfully`);
+            console.log('\x1b[36m%s\x1b[0m', `• For more info: ${styleDocsURL}...`);
+        }
+    });
+}

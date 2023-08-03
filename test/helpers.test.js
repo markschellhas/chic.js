@@ -1,5 +1,5 @@
 
-import { pluralize, singularize, capitalize, getNamespaces, transformFieldsToObject } from '../lib/helpers.js';
+import { pluralize, singularize, capitalize, getNamespaces, transformFieldsToObject, styledBy } from '../lib/helpers.js';
 
 describe('pluralize', () => {
   it('should add an "s" to the end of a word if it does not already end in "s"', () => {
@@ -44,4 +44,55 @@ describe('transformFieldsToObject', () => {
       { name: 'age', type: 'number' }
     ]);
   });
+});
+
+describe("styledBy", () => {
+  it("should return an array containing a truthy boolean value and a string", () => {
+      const options = { _: [ 'styled', 'by', 'tailwind' ] };
+      const result = styledBy(options);
+      expect(result).toEqual([true, 'tailwind', 'npx svelte-add tailwindcss', 'https://github.com/svelte-add/tailwindcss']);
+  });
+  
+  it("should return an array containing a truthy boolean value and a string when styled with is used", () => {
+      const options = { _: [ 'styled', 'with', 'tailwind' ] };
+      const result = styledBy(options);
+      expect(result).toEqual([true, 'tailwind', 'npx svelte-add tailwindcss', 'https://github.com/svelte-add/tailwindcss']);
+  });
+
+  it("should return an array containing a false boolean and empty strings when there are no options", () => {
+    const options = { _: [] };
+    const result = styledBy(options);
+    expect(result).toEqual([false, '', '', '']);
+  });
+  
+  it("should return an array containing a false boolean and empty strings when styled by value is not recognised.", () => {
+    const options = { _: [ 'styled', 'by', 'headwind' ] };
+    const result = styledBy(options);
+    expect(result).toEqual([false, '', '', '']);
+  });
+  
+  it("should return an array containing a false boolean and empty strings when styled by value is not present.", () => {
+    const options = { _: [ 'styled', 'by' ] };
+    const result = styledBy(options);
+    expect(result).toEqual([false, '', '', '']);
+  });
+  
+  it("should return an array containing a false boolean and empty strings when styled by value is not present.", () => {
+    const options = { _: [ 'styled' ] };
+    const result = styledBy(options);
+    expect(result).toEqual([false, '', '', '']);
+  });
+  
+  it("should return an array containing a false boolean and empty strings when styled by value is not present.", () => {
+    const options = { _: [ 'styled' ] };
+    const result = styledBy(options);
+    expect(result).toEqual([false, '', '', '']);
+  });
+  
+  it("should return an array containing a false boolean and empty strings when prompt is not recognised.", () => {
+    const options = { _: [ 'styled', 'in', 'tailwind' ] };
+    const result = styledBy(options);
+    expect(result).toEqual([false, '', '', '']);
+  });
+
 });

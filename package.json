@@ -1,6 +1,6 @@
 {
   "name": "chic.js",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "CLI for rapidly scaffolding SvelteKit apps",
   "main": "index.js",
   "bin": {

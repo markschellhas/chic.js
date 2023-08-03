@@ -12,12 +12,14 @@ or in your project directory:
 ```bash
 npm install chic.js
 ```
-## [1.0.3] - 2023-08-02
+## [1.1.0] - 2023-08-03
 
-Minor bug fixes
+Adds `styled with` feature to easily add styling frameworks to your project on creation.
 
 ### Changed
 - adds error notice message to `renderedRouteTable`
+- adds `styled with <framework>` option to `new` command. Usage example: `chic new my-app styled with bootstrap`
+- adds version check test to avoid publishing incorrect version numbers
 
 ## [1.0.2] - 2023-07-31
 
