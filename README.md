@@ -22,7 +22,9 @@ Chic.js is a rapid prototyping tool for Sveltekit. Use the CLI to scaffold your 
 #### `chic new MyApp`  
 Creates a new Sveltekit app, called `MyApp`
 
-### With styling framework: `chic new MyApp styled with tailwind`
+### With styling framework
+
+#### `chic new MyApp styled with tailwind`
 Creates a new Sveltekit app, called `MyApp`, with Tailwind CSS styling framework, for example.
 
 Currently works with `bootstrap`, `tailwind` and `bulma`.

@@ -12,6 +12,13 @@ or in your project directory:
 ```bash
 npm install chic.js
 ```
+## [1.1.1] - 2023-08-03
+
+Minor changes to README
+
+### Changed
+- formating changes to README
+
 ## [1.1.0] - 2023-08-03
 
 Adds `styled with` feature to easily add styling frameworks to your project on creation.
