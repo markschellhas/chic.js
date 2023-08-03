@@ -14,7 +14,7 @@ import { styledBy } from './lib/helpers.js';
 const prog = sade('chic');
 
 prog
-    .version('1.1.0')
+    .version('1.1.1')
 
 prog
     .command('new <name>')
