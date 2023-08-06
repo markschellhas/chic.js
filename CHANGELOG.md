@@ -12,12 +12,21 @@ or in your project directory:
 ```bash
 npm install chic.js
 ```
+## [1.1.2] - 2023-08-04
+
+Minor changes and bug fixes
+
+### Changed
+- formating changes to README
+- adds created model to `chic.json` file
+- New `chic add` command adds ability to create a new Page or Component.
+
 ## [1.1.1] - 2023-08-03
 
 Minor changes to README
 
 ### Changed
-- formating changes to README
+- updated descriptions of commands
 
 ## [1.1.0] - 2023-08-03
 

@@ -5,7 +5,7 @@ import sade from 'sade';
 
 import {
     addModelToDBFile, createAPIRoutes, createController,
-    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile
+    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile, readConfig, addNewRouteOrComponent
 } from './lib/functions.js';
 import { spawn } from 'child_process';
 import { destroyButtonTemplate } from './lib/templates/component_templates.js';
@@ -105,8 +105,9 @@ prog
 🌟 Next steps:
 --------------
   1: cd ${name}
-  2: chic make <resource> <fields>
-  3: chic s
+  2: npm install
+  3: chic make <resource> <fields>
+  4: chic s
 
                                 `)
                                 console.log('\x1b[36m%s\x1b[0m', `To start the server run: chic s`);
@@ -123,29 +124,61 @@ prog
         });
     });
 
+prog
+    .command('add <what>')
+    .describe('Adds a new route or component to your project.')
+    .example('add /about')
+    .describe('Adds a new route')
+    .example('add Login')
+    .describe('Adds a new component')
+    .action((what, options, opts) => {
+        addNewRouteOrComponent(what);
+    });
+
 
 
 prog
     .command('make <what> <options>')
-    .describe('Will scaffold a new MVC resource. Options are the field names of the model.')
+    .describe('Scaffolds a new MVC resource. Options are the field names of the model. You can also use a config file by running "chic make from file"')
     // .option('-d, --database', 'What kind of database should be used?')
+    .example('make Guitar name:string brand:string price:number')
+    .example('make from file')
     .action((what, options, opts) => {
         console.log(`> Scaffolding a new ${what}`);
         // console.log('> Model fields', options);
         const allOptions = [options, ...opts._].join(' ');
-        createModel(what, allOptions);
-        addModelToDBFile(what);
-        createFormComponent(what, ['new', '[id]/edit'], allOptions);
-        writeDeleteButtonComponent(destroyButtonTemplate); // TODO: only create once.
-        createRoutePages(what, ['', 'new', '[id]', '[id]/edit'], allOptions);
-        createAPIRoutes(what, ['', '[id]']);
-        createController(what);
-        createHooksServerFile();
+        if(what === "from" && options === "file") {
+            console.log('\x1b[36m%s\x1b[0m', `• Making from config file...`);
+            const config = readConfig();
+            for (let index = 0; index < config.models.length; index++) {
+                console.log(index);
+                const model = config.models[index];
+                console.log('\x1b[36m%s\x1b[0m', `• Making ${model.name}...`);
+                createModel(model.name, null, config.models[index].fields);
+                addModelToDBFile(model.name);
+                createFormComponent(model.name, ['new', '[id]/edit'], allOptions);
+                if (index === 0) writeDeleteButtonComponent(destroyButtonTemplate);
+                createRoutePages(model.name, ['', 'new', '[id]', '[id]/edit'], allOptions);
+                createAPIRoutes(model.name, ['', '[id]']);
+                createController(model.name);
+                createHooksServerFile();
+            }
+        } else {
+            createModel(what, allOptions, null);
+            addModelToDBFile(what);
+            createFormComponent(what, ['new', '[id]/edit'], allOptions);
+            writeDeleteButtonComponent(destroyButtonTemplate); // TODO: only create once.
+            createRoutePages(what, ['', 'new', '[id]', '[id]/edit'], allOptions);
+            createAPIRoutes(what, ['', '[id]']);
+            createController(what);
+            createHooksServerFile();
+        }
+
     });
 
 prog
     .command('routes')
-    .describe('Will update routes for endpoint.')
+    .describe('Updates routes.')
     // .option('-d, --database', 'What kind of database should be used?')
     .action((what, options, opts) => {
         createHooksServerFile();
@@ -153,7 +186,7 @@ prog
 
 prog
     .command('s')
-    .describe('Will start the development server')
+    .describe('Starts the development server')
     .action(() => {
         console.log(`> Running development server`);
         console.log("");
@@ -182,7 +215,7 @@ prog.parse(process.argv);
 /**
  * 
  * @param {String} styleFrameworkName 
- * @param {Array} styleInstallCommand 
+ * @param {Array<string>} styleInstallCommand 
  * @param {String} styleDocsURL 
  */
 function addStylesToProject(styleFrameworkName, styleInstallCommand, styleDocsURL) {

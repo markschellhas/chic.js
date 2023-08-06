@@ -1,5 +1,14 @@
 {
+  "testEnvironment": "jest-environment-node",
   "transform": {
-    "^.+\\.jsx?$": "babel-jest"
-  }
+    "^.+\\.jsx?$": ["babel-jest"]
+  },
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
+  "moduleFileExtensions": [
+    "js",
+    "mjs",
+    "json"
+  ]
 }

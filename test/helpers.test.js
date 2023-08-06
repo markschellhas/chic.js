@@ -1,5 +1,5 @@
 
-import { pluralize, singularize, capitalize, getNamespaces, transformFieldsToObject, styledBy } from '../lib/helpers.js';
+import { pluralize, singularize, capitalize, getNamespaces, transformFieldsToObject, styledBy, transformYamlModelsAndFields } from '../lib/helpers.js';
 
 describe('pluralize', () => {
   it('should add an "s" to the end of a word if it does not already end in "s"', () => {
@@ -42,6 +42,12 @@ describe('transformFieldsToObject', () => {
     expect(transformFieldsToObject('name:string age:number')).toEqual([
       { name: 'name', type: 'string' },
       { name: 'age', type: 'number' }
+    ]);
+  });
+  it('should automatically make type string if fields does not include a colon', () => {
+    expect(transformFieldsToObject('name color')).toEqual([
+      { name: 'name', type: 'string' },
+      { name: 'color', type: 'string' }
     ]);
   });
 });
@@ -93,6 +99,39 @@ describe("styledBy", () => {
     const options = { _: [ 'styled', 'in', 'tailwind' ] };
     const result = styledBy(options);
     expect(result).toEqual([false, '', '', '']);
+  });
+
+});
+
+describe("transformYamlModelsAndFields", () => {
+  it("should return an array of objects with name and fields properties", () => {
+    const yaml = `
+    models:
+      - name: User
+        fields: name age:number
+      - name: Post
+        fields: title body:text
+    `;
+    const result = transformYamlModelsAndFields(yaml);
+    expect(result).toEqual({
+      models: [
+        {
+          name: 'User',
+          fields: [
+            { name: 'name', type: 'string' },
+            { name: 'age', type: 'number' }
+          ]
+        },
+        {
+          name: 'Post',
+          fields: [
+            { name: 'title', type: 'string' },
+            { name: 'body', type: 'text' }
+          ]
+        }
+      ]
+    });
+    
   });
 
 });

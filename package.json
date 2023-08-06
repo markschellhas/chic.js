@@ -27,7 +27,8 @@
   },
   "homepage": "https://chicjs.org",
   "dependencies": {
-    "sade": "^1.8.1"
+    "sade": "^1.8.1",
+    "yaml": "^2.3.1"
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",

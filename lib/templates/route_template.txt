@@ -1,0 +1,23 @@
+
+<script>
+    // place your JavaScript code here
+    
+</script>
+
+<svelte:head>
+    <title>{NAME}</title>
+    <meta name="description" content="{NAME} page" />
+</svelte:head>
+
+<h1>{NAME}</h1>
+
+<p>A chic route</p>
+
+<style>
+    /* place your styles here */
+    h1 {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+</style>
+
