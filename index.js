@@ -5,16 +5,16 @@ import sade from 'sade';
 
 import {
     addModelToDBFile, createAPIRoutes, createController,
-    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile, readConfig, addNewRouteOrComponent
+    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile, readConfig, addNewRouteOrComponent, getDebugValue, setDebugValue
 } from './lib/functions.js';
 import { spawn } from 'child_process';
 import { destroyButtonTemplate } from './lib/templates/component_templates.js';
-import { styledBy } from './lib/helpers.js';
+import { CONSOLE_COLOR, styledBy } from './lib/helpers.js';
 
 const prog = sade('chic');
 
 prog
-    .version('1.2.0')
+    .version('1.3.0')
 
 prog
     .command('new <name>')
@@ -133,6 +133,33 @@ prog
     .describe('Adds a new component')
     .action((what, options, opts) => {
         addNewRouteOrComponent(what);
+    });
+
+prog
+    .command('debug <command>')
+    .describe('Checks and sets CHIC_DEBUG mode. If ON, the routes endpoint will be active. Be sure to set CHIC_DEBUG=OFF in your .env file before deploying.')
+    .example('chic debug status')
+    .example('chic debug ON')
+    .example('chic debug OFF')
+    .action((command) => {
+        const v = command.toUpperCase();
+        switch (v) {
+            case "STATUS":
+                console.log(!getDebugValue() ? CONSOLE_COLOR.RED : CONSOLE_COLOR.BLUE, `• CHIC_DEBUG is currently ${!getDebugValue() ? "not specified in your .env file" : getDebugValue()}`);
+                break;
+            case "ON":
+                console.log('\x1b[36m%s\x1b[0m', `• Turning on debug mode...`);
+                setDebugValue("ON");
+                break;
+            case "OFF":
+                console.log('\x1b[36m%s\x1b[0m', `• Turning off debug mode...`);
+                setDebugValue("OFF");
+                break;
+            default:
+                console.log('\x1b[36m%s\x1b[0m', `• CHIC_DEBUG is currently ${!getDebugValue() ? "not specified in your .env file" : getDebugValue()}`);
+                break;
+        }
+        
     });
 
 

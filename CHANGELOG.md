@@ -12,6 +12,14 @@ or in your project directory:
 ```bash
 npm install chic.js
 ```
+
+## [1.3.0] - 2023-08-07
+
+Added features and bug fixes.
+
+### Changed
+- Adds `debug` mode command. Usage example: `chic debug status`, which will show the current `CHIC_DEBUG` value set in the `.env` file. If `ON` routes table will be shown. If `OFF` routes table will not be shown.
+
 ## [1.2.0] - 2023-08-06
 
 Minor changes and bug fixes
