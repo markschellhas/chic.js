@@ -16,6 +16,11 @@ Chic.js is a rapid prototyping tool for Sveltekit. Use the CLI to scaffold your 
 4. Run the development server with `chic s`
 5. And voila! You have a working app with a Book resource.
 
+## Routes
+
+Chic.js adds a `/routes` endpoint to your app, which shows all the routes in your app - for example API endpoints for your resources created by Chic.js. This is useful for debugging and development. To hide the `/routes` endpoint in production, set `CHIC_DEBUG=OFF` in your `.env` file.
+
+
 ## Chic commands
 
 | Command | Description |
