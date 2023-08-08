@@ -156,7 +156,7 @@ prog
                 setDebugValue("OFF");
                 break;
             default:
-                console.log('\x1b[36m%s\x1b[0m', `• CHIC_DEBUG is currently ${!getDebugValue() ? "not specified in your .env file" : getDebugValue()}`);
+                console.log('\x1b[36m%s\x1b[0m', `CHIC_DEBUG is currently ${!getDebugValue() ? "not specified in your .env file" : getDebugValue()}`);
                 break;
         }
         
