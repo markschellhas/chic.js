@@ -1,28 +1,27 @@
 import chicConfig from '../chic.json';
 import { RoutesTable } from 'chic.js/ui';
+import { CHIC_DEBUG } from '$env/static/private';
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-    if (event.url.pathname.startsWith('/routes') || !event.route.id) {
-        let errorCode = null;
-        let isError = false;
-        if (event.url.pathname.startsWith('/routes') && !event.route.id) {
-            errorCode = 0;
-        }
-        if (!event.url.pathname.startsWith('/routes') && !event.route.id) {
-            isError = true;
-            errorCode = 404;
-        }
-        errorCode = event.url.pathname.startsWith('/routes')? 200 : 404;
-        const routes = chicConfig.routes;
+  if (event.url.pathname.startsWith('/routes') || !event.route.id) {
+    const isRoutesPath = event.url.pathname.startsWith('/routes');
+    const isError = !isRoutesPath && !event.route.id;
+    const errorCode = isRoutesPath ? 200 : 404;
 
-        return new Response(RoutesTable(routes, isError, errorCode), {
-            headers: {
-                'content-type': 'text/html',
-            },
-        });
+    let responseMessage;
+    if (CHIC_DEBUG === "ON" || CHIC_DEBUG === "OFF") {
+      responseMessage = CHIC_DEBUG === "ON" ? RoutesTable(chicConfig.routes, isError, errorCode) : "Page not available.";
+    } else {
+      responseMessage = RoutesTable(chicConfig.routes, isError, errorCode);
     }
 
-    const response = await resolve(event);
-    return response;
+    return new Response(responseMessage, {
+      headers: {
+        'content-type': 'text/html',
+      },
+    });
+  }
+
+  return await resolve(event);
 }
