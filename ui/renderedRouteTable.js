@@ -53,8 +53,8 @@ export const RoutesTable = (routes, isError, errorCode) => {
     <div class="chicjs_routes">
         <h1 class="is-size-3">Routes</h1>
         ${isError ? `<div class="notification is-danger">${errorMessage}</div>` : ''}
-        <p class="pt-4 pb-4">These are the routes that are configured in chic.json. You can edit this file to add more
-            routes.</p>
+        <p class="pt-4 pb-4">These are the routes that are configured in chic.json. You can edit the file to add more
+            routes. To hide this page, set CHIC_DEBUG=OFF in .env file.</p>
         <div class="field">
             <input class="input" id="search_field" type="text" placeholder="Search for routes" />
         </div>

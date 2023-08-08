@@ -13,9 +13,9 @@ or in your project directory:
 npm install chic.js
 ```
 
-## [1.3.0] - 2023-08-07
+## [1.3.0] - 2023-08-08
 
-Added features and bug fixes.
+Adds funcitonality to hide `/routes` for production deployments by settings `CHIC_DEBUG=OFF` in the `.env` file.
 
 ### Changed
 - Adds `debug` mode command. Usage example: `chic debug status`, which will show the current `CHIC_DEBUG` value set in the `.env` file. If `ON` routes table will be shown. If `OFF` routes table will not be shown.
