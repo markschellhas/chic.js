@@ -126,11 +126,9 @@ prog
 
 prog
     .command('add <what>')
-    .describe('Adds a new route or component to your project.')
+    .describe('Adds a new route or component to your project.\n Put a / in front to create a new route, otherwise it will create a new component.\n See examples below.')
     .example('add /about')
-    .describe('Adds a new route')
     .example('add Login')
-    .describe('Adds a new component')
     .action((what, options, opts) => {
         addNewRouteOrComponent(what);
     });
