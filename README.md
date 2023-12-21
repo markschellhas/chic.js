@@ -1,6 +1,8 @@
 # About Chic.js
 
-Chic.js is a rapid prototyping tool for Sveltekit. Use the CLI to scaffold your app quickly, and focus on the fun stuff.
+Chic.js is a rapid prototyping tool for Sveltekit. Use the CLI to scaffold your app quickly, and focus on the fun stuff.  
+📺 Watch a walkthrough video by [Svelte Safari](https://www.youtube.com/@SvelteSafari) here: https://www.youtube.com/watch?v=AZdUtR4GYtE
+
 
 # Getting started
 

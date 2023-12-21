@@ -14,7 +14,7 @@ import { CONSOLE_COLOR, styledBy } from './lib/helpers.js';
 const prog = sade('chic');
 
 prog
-    .version('1.3.1')
+    .version('1.3.2')
 
 prog
     .command('new <name>')
