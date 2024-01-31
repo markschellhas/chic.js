@@ -27,14 +27,15 @@ Chic.js adds a `/routes` endpoint to your app, which shows all the routes in you
 
 | Command | Description |
 | --- | --- |
+| `chic --help` | Displays help information about Chic.js commands |
+| `chic --version` | Displays the current version of Chic.js |
 | `chic new GuitarStore` | Creates a new Sveltekit app, called `GuitarStore` |
 | `chic new GuitarStore styled with tailwind` | Creates a new Sveltekit app, called `GuitarStore`, with Tailwind CSS styling framework. Options currently available: `bootstrap`, `tailwind` and `bulma` |
 | `chic make Guitar name:string type:string description:text` | Creates pages, API routes, model and form components for CRUD operations on the `Guitar` resource |
 | `chic add /about` | Creates an "About" page in the `src/routes` directory |
 | `chic add ContactForm` | Creates a `ContactForm.svelte` component in the `src/lib/components` directory |
+| `chic sitemap [domain name]` | Creates a sitemap (note: build your project locally first before running this command) |
 | `chic s` | Runs the development server |
 | `chic debug status` | Shows the status of `CHIC_DEBUG` in your `.env` file |
 | `chic debug ON` | Sets `CHIC_DEBUG` value to `ON`. When `ON`, the routes endpoint will be active |
 | `chic debug OFF` | Sets `CHIC_DEBUG` value to `OFF`. When `OFF`, the routes endpoint will be inactive |
-| `chic --version` | Displays the current version of Chic.js |
-| `chic --help` | Displays help information about Chic.js commands |

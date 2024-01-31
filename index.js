@@ -5,16 +5,18 @@ import sade from 'sade';
 
 import {
     addModelToDBFile, createAPIRoutes, createController,
-    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile, readConfig, addNewRouteOrComponent, getDebugValue, setDebugValue
+    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile, readConfig, addNewRouteOrComponent, getDebugValue, setDebugValue,
+    createSitemap
 } from './lib/functions.js';
 import { spawn } from 'child_process';
 import { destroyButtonTemplate } from './lib/templates/component_templates.js';
 import { CONSOLE_COLOR, styledBy } from './lib/helpers.js';
+import { create } from 'domain';
 
 const prog = sade('chic');
 
 prog
-    .version('1.3.2')
+    .version('1.4.0')
 
 prog
     .command('new <name>')
@@ -234,6 +236,15 @@ prog
         });
 
     });
+
+prog
+    .command('sitemap <url>')
+    .describe('Generates a sitemap.xml file for your project.')
+    .example('sitemap https://example.com')
+    .action((url) => {
+        createSitemap(url);
+    });
+    
 
 prog.parse(process.argv);
 
