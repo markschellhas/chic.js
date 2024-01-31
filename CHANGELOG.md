@@ -13,6 +13,10 @@ or in your project directory:
 npm install chic.js
 ```
 
+## [1.4.0] - 2024-01-31
+
+Adds sitemap generation command `chic sitemap`
+
 ## [1.3.0] - 2023-08-08
 
 Adds funcitonality to hide `/routes` for production deployments by settings `CHIC_DEBUG=OFF` in the `.env` file.
