@@ -13,6 +13,12 @@ or in your project directory:
 npm install chic.js
 ```
 
+## [1.4.1] - 2024-03-01
+
+- refactors version indication and removes version test
+- adds catch all command
+- adds donation support link
+
 ## [1.4.0] - 2024-01-31
 
 Adds sitemap generation command `chic sitemap`
