@@ -11,12 +11,23 @@ import {
 import { spawn } from 'child_process';
 import { destroyButtonTemplate } from './lib/templates/component_templates.js';
 import { CONSOLE_COLOR, styledBy } from './lib/helpers.js';
-import { create } from 'domain';
+
+import { readFileSync } from 'fs';
+
+let pjson;
+try {
+    const pkgPath = new URL('./package.json', import.meta.url);
+    const pkgData = readFileSync(pkgPath);
+    pjson = JSON.parse(pkgData);
+} catch (err) {
+    console.error('Error reading package.json:', err);
+}
+
 
 const prog = sade('chic');
 
 prog
-    .version('1.4.0')
+    .version(pjson.version);
 
 prog
     .command('new <name>')
@@ -113,8 +124,9 @@ prog
 
                                 `)
                                 console.log('\x1b[36m%s\x1b[0m', `To start the server run: chic s`);
-                                console.log('\x1b[36m%s\x1b[0m', `More info: https://chicjs.org`);
-                                console.log('\x1b[36m%s\x1b[0m', `----------------------------------------`);
+                                console.log(CONSOLE_COLOR.GREEN, `--------------------`);
+                                console.log(CONSOLE_COLOR.GREEN, `Donate to support us: https://ko-fi.com/sveltesafari`);
+                                console.log(CONSOLE_COLOR.GREEN, `--------------------`);
                             }
                         });
                     }
@@ -247,17 +259,15 @@ prog
     
 // if command not found, show help
 prog
-    .command('*')
+    .command('*', '', { default: true })
     .action(() => {
-        console.log(CONSOLE_COLOR.GREEN, `
-        Welcome to chic.js!
-        --------------------
-        `);
-        // show version:
-        console.log(CONSOLE_COLOR.BLUE, `Version: ${prog.version()}`);
-        // show author:
-        console.log(CONSOLE_COLOR.BLUE, `Author: ${prog.author}`);
-        prog.outputHelp();
+        console.log(CONSOLE_COLOR.BLUE, `Chic.js`);
+        console.log(CONSOLE_COLOR.BLUE, `Version: ${pjson.version}`);
+        console.log(CONSOLE_COLOR.BLUE, `Author: Mark Schellhas`);
+        console.log(CONSOLE_COLOR.BLUE, `For help, run chic --help`);
+        console.log(CONSOLE_COLOR.GREEN, `--------------------`);
+        console.log(CONSOLE_COLOR.GREEN, `Donate to support this project: https://ko-fi.com/sveltesafari`);
+        console.log(CONSOLE_COLOR.GREEN, `--------------------`);
     });
     
 prog.parse(process.argv);

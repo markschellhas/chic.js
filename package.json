@@ -1,6 +1,6 @@
 {
   "name": "chic.js",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "CLI for rapidly scaffolding SvelteKit apps",
   "main": "index.js",
   "bin": {
@@ -18,7 +18,9 @@
     "chic",
     "chic.js",
     "svelte",
-    "sveltekit"
+    "sveltekit",
+    "Mark Schellhas",
+    "Svelte Safari"
   ],
   "author": "Mark Schellhas",
   "license": "MIT",
