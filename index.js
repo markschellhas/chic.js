@@ -245,7 +245,21 @@ prog
         createSitemap(url);
     });
     
-
+// if command not found, show help
+prog
+    .command('*')
+    .action(() => {
+        console.log(CONSOLE_COLOR.GREEN, `
+        Welcome to chic.js!
+        --------------------
+        `);
+        // show version:
+        console.log(CONSOLE_COLOR.BLUE, `Version: ${prog.version()}`);
+        // show author:
+        console.log(CONSOLE_COLOR.BLUE, `Author: ${prog.author}`);
+        prog.outputHelp();
+    });
+    
 prog.parse(process.argv);
 
 /**
