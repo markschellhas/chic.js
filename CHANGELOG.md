@@ -13,6 +13,10 @@ or in your project directory:
 npm install chic.js
 ```
 
+## [1.4.2] - 2024-03-01
+
+- adds npm funding link
+
 ## [1.4.1] - 2024-03-01
 
 - refactors version indication and removes version test
