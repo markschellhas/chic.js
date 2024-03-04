@@ -13,6 +13,10 @@ or in your project directory:
 npm install chic.js
 ```
 
+## [1.4.3] - 2024-03-04
+
+- bug fix on destroy method for api endpoints
+
 ## [1.4.2] - 2024-03-01
 
 - adds npm funding link
