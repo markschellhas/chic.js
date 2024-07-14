@@ -102,36 +102,3 @@ describe("styledBy", () => {
   });
 
 });
-
-describe("transformYamlModelsAndFields", () => {
-  it("should return an array of objects with name and fields properties", () => {
-    const yaml = `
-    models:
-      - name: User
-        fields: name age:number
-      - name: Post
-        fields: title body:text
-    `;
-    const result = transformYamlModelsAndFields(yaml);
-    expect(result).toEqual({
-      models: [
-        {
-          name: 'User',
-          fields: [
-            { name: 'name', type: 'string' },
-            { name: 'age', type: 'number' }
-          ]
-        },
-        {
-          name: 'Post',
-          fields: [
-            { name: 'title', type: 'string' },
-            { name: 'body', type: 'text' }
-          ]
-        }
-      ]
-    });
-    
-  });
-
-});

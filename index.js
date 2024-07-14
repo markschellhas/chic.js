@@ -58,24 +58,8 @@ prog
                 // Run init function
                 init();
 
-                // Install chic.js as dependency:
-                console.log(`> Installing chic.js in project ${name}`);
-                const installChicProcess = spawn('npm', ['install', 'chic.js', '--save'], {
-                    stdio: 'inherit',
-                    shell: true
-                });
 
-                installChicProcess.on('error', (error) => {
-                    console.error(`Error installing chic.js: ${error}`);
-                });
-
-                installChicProcess.on('exit', (code) => {
-                    if (code !== 0) {
-                        console.error(`The process exited with code ${code}`);
-                    } else {
-                        console.log('Chic.js installed successfully');
-
-                        // Install sequelize
+                // Install sequelize
                 console.log(`> Installing sequelize in project ${name}`);
                 const installSequelizeProcess = spawn('npm', ['install', 'sequelize', '--save'], {
                     stdio: 'inherit',
@@ -129,8 +113,6 @@ prog
                                 console.log(CONSOLE_COLOR.GREEN, `--------------------`);
                             }
                         });
-                    }
-                });
                     }
                 });
 
@@ -261,7 +243,9 @@ prog
 prog
     .command('*', '', { default: true })
     .action(() => {
-        console.log(CONSOLE_COLOR.BLUE, `Chic.js`);
+        console.log(CONSOLE_COLOR.BLUE, "╔═╗┬ ┬┬┌─┐  ┬┌─┐");
+	    console.log(CONSOLE_COLOR.BLUE, "║  ├─┤││    │└─┐");
+	    console.log(CONSOLE_COLOR.BLUE, "╚═╝┴ ┴┴└─┘o└┘└─┘");
         console.log(CONSOLE_COLOR.BLUE, `Version: ${pjson.version}`);
         console.log(CONSOLE_COLOR.BLUE, `Author: Mark Schellhas`);
         console.log(CONSOLE_COLOR.BLUE, `For help, run chic --help`);

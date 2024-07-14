@@ -1,5 +1,5 @@
 import chicConfig from '../chic.json';
-import { RoutesTable } from 'chic.js/ui';
+import { RoutesTable } from './RoutesTable.js';
 import { CHIC_DEBUG } from '$env/static/private';
 
 /** @type {import('@sveltejs/kit').Handle} */

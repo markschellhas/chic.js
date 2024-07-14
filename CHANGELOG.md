@@ -13,6 +13,10 @@ or in your project directory:
 npm install chic.js
 ```
 
+## [1.4.3] - 2024-07-17
+
+- small refactor: removes `chic.js` as a dependency in `package.json` file
+
 ## [1.4.3] - 2024-03-04
 
 - bug fix on destroy method for api endpoints
