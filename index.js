@@ -108,9 +108,7 @@ prog
 
                                 `)
                                 console.log('\x1b[36m%s\x1b[0m', `To start the server run: chic s`);
-                                console.log(CONSOLE_COLOR.GREEN, `--------------------`);
                                 console.log(CONSOLE_COLOR.GREEN, `Donate to support us: https://ko-fi.com/sveltesafari`);
-                                console.log(CONSOLE_COLOR.GREEN, `--------------------`);
                             }
                         });
                     }
