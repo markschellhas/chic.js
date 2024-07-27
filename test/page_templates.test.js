@@ -35,7 +35,7 @@ describe("page_templates", () => {
       const resourceName = "posts";
       const expected = `
   <div class="links">
-    <a href="/${resourceName}">Back to posts</a> <a href="/${resourceName}/{data.post.id}/edit">Edit post</a>
+    <a href="/${resourceName}">Back to posts</a> <a href="/${resourceName}/{data.item.id}/edit">Edit post</a>
 </div>
 `;
       expect(linksOnShowPageTemplate(resourceName)).toEqual(expected);
@@ -48,7 +48,7 @@ describe("page_templates", () => {
       const firstFieldName = "title";
       const expected = `
     <ul>
-    {#each data.posts as item}
+    {#each data.items as item}
       <li>
           <a href={"/posts/"+item.id}>{item.title}</a>
       </li>

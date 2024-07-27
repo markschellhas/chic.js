@@ -39,10 +39,10 @@ export const actions = {
 
 export async function load({ params }) {
     const list = await listCats();
-    const cats = list.map(cat => cat.toJSON());
+    const data = list.map(cat => cat.toJSON());
 
     return {
-        cats: cats
+        data: data
     };
 }
 `);

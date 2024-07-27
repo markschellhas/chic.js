@@ -5,12 +5,13 @@ import sade from 'sade';
 
 import {
     addModelToDBFile, createAPIRoutes, createController,
-    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile, readConfig, addNewRouteOrComponent, getDebugValue, setDebugValue,
+    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile, addNewRouteOrComponent, getDebugValue, setDebugValue,
     createSitemap
 } from './lib/functions.js';
+import { scaffoldFromDatabase } from './lib/scaffold.js';
 import { spawn } from 'child_process';
 import { destroyButtonTemplate } from './lib/templates/component_templates.js';
-import { CONSOLE_COLOR, styledBy } from './lib/helpers.js';
+import { CONSOLE_COLOR, styledBy, fieldValidation, consoleLog } from './lib/helpers.js';
 
 import { readFileSync } from 'fs';
 
@@ -35,9 +36,9 @@ prog
     .example('new myapp')
     .example('new myapp styled with tailwind')
     .action((name, options, opts) => {
-        console.log('\x1b[36m%s\x1b[0m', `• Creating a new Sveltekit project named ${name}`);
-        const [ isStyled, styleFrameworkName, styleInstallCommand, styleDocsURL ] = styledBy(options);
-        
+        console.log(CONSOLE_COLOR.BLUE, `• Creating a new Sveltekit project named ${name}`);
+        const [isStyled, styleFrameworkName, styleInstallCommand, styleDocsURL] = styledBy(options);
+
         const createSvelteProcess = spawn('npm', ['create', 'svelte@latest', name], {
             stdio: 'inherit', // this will show the live output of the command
             shell: true
@@ -47,7 +48,7 @@ prog
             console.error(`Error creating the project: ${error}`);
         });
 
-        createSvelteProcess.on('exit', (code) => {
+        createSvelteProcess.on('exit', async (code) => {
             if (code !== 0) {
                 console.error(`The process exited with code ${code}`);
             } else {
@@ -56,8 +57,7 @@ prog
                 process.chdir(path.join(process.cwd(), name));
 
                 // Run init function
-                init();
-
+                await init();
 
                 // Install sequelize
                 console.log(`> Installing sequelize in project ${name}`);
@@ -123,7 +123,7 @@ prog
     .describe('Adds a new route or component to your project.\n Put a / in front to create a new route, otherwise it will create a new component.\n See examples below.')
     .example('add /about')
     .example('add Login')
-    .action((what, options, opts) => {
+    .action((what) => {
         addNewRouteOrComponent(what);
     });
 
@@ -151,7 +151,7 @@ prog
                 console.log('\x1b[36m%s\x1b[0m', `CHIC_DEBUG is currently ${!getDebugValue() ? "not specified in your .env file" : getDebugValue()}`);
                 break;
         }
-        
+
     });
 
 
@@ -159,30 +159,29 @@ prog
 prog
     .command('make <what> <options>')
     .describe('Scaffolds a new MVC resource. Options are the field names of the model. You can also use a config file by running "chic make from file"')
-    // .option('-d, --database', 'What kind of database should be used?')
+    // .option('--from-database', 'What kind of database should be used?')
     .example('make Guitar name:string brand:string price:number')
     .example('make from file')
-    .action((what, options, opts) => {
-        console.log(`> Scaffolding a new ${what}`);
-        // console.log('> Model fields', options);
-        const allOptions = [options, ...opts._].join(' ');
-        if(what === "from" && options === "file") {
-            console.log('\x1b[36m%s\x1b[0m', `• Making from config file...`);
-            const config = readConfig();
-            for (let index = 0; index < config.models.length; index++) {
-                console.log(index);
-                const model = config.models[index];
-                console.log('\x1b[36m%s\x1b[0m', `• Making ${model.name}...`);
-                createModel(model.name, null, config.models[index].fields);
-                addModelToDBFile(model.name);
-                createFormComponent(model.name, ['new', '[id]/edit'], allOptions);
-                if (index === 0) writeDeleteButtonComponent(destroyButtonTemplate);
-                createRoutePages(model.name, ['', 'new', '[id]', '[id]/edit'], allOptions);
-                createAPIRoutes(model.name, ['', '[id]']);
-                createController(model.name);
-                createHooksServerFile();
-            }
+    .action( async (what, options, opts) => {
+
+        console.log(what, options, opts);
+        if (what === "from" && options === "database") {
+            console.log(CONSOLE_COLOR.BLUE, '> Scaffolding from an existing database...');
+            const scaffoldResponse = await scaffoldFromDatabase();
+            console.log(scaffoldResponse);
+        } else if (what === "from") {
+            console.log(CONSOLE_COLOR.RED, '❓ Did you mean to scaffold from an existing database?');
+            console.log(CONSOLE_COLOR.BLUE, '💡 Run: chic make from database');
+            throw new Error('Command not found. See info above. 👆');
         } else {
+            console.log(CONSOLE_COLOR.BLUE, `> Scaffolding a new ${what}`);
+            const allOptions = [options, ...opts._].join(' ');
+
+            const v = fieldValidation(allOptions);
+            if (!v) { 
+                consoleLog(CONSOLE_COLOR.RED, 'Invalid field types!', 'Please use string, number, boolean, date, json, or text.');
+                process.exit(1);
+            }
             createModel(what, allOptions, null);
             addModelToDBFile(what);
             createFormComponent(what, ['new', '[id]/edit'], allOptions);
@@ -236,14 +235,15 @@ prog
     .action((url) => {
         createSitemap(url);
     });
-    
+
+
 // if command not found, show help
 prog
     .command('*', '', { default: true })
     .action(() => {
         console.log(CONSOLE_COLOR.BLUE, "╔═╗┬ ┬┬┌─┐  ┬┌─┐");
-	    console.log(CONSOLE_COLOR.BLUE, "║  ├─┤││    │└─┐");
-	    console.log(CONSOLE_COLOR.BLUE, "╚═╝┴ ┴┴└─┘o└┘└─┘");
+        console.log(CONSOLE_COLOR.BLUE, "║  ├─┤││    │└─┐");
+        console.log(CONSOLE_COLOR.BLUE, "╚═╝┴ ┴┴└─┘o└┘└─┘");
         console.log(CONSOLE_COLOR.BLUE, `Version: ${pjson.version}`);
         console.log(CONSOLE_COLOR.BLUE, `Author: Mark Schellhas`);
         console.log(CONSOLE_COLOR.BLUE, `For help, run chic --help`);
@@ -251,7 +251,7 @@ prog
         console.log(CONSOLE_COLOR.GREEN, `Donate to support this project: https://ko-fi.com/sveltesafari`);
         console.log(CONSOLE_COLOR.GREEN, `--------------------`);
     });
-    
+
 prog.parse(process.argv);
 
 /**
@@ -271,7 +271,7 @@ function addStylesToProject(styleFrameworkName, styleInstallCommand, styleDocsUR
         stdio: 'inherit',
         shell: true
     });
-    
+
     installStyleProcess.on('error', (error) => {
         console.error(`Error installing ${styleFrameworkName}: ${error}`);
     });

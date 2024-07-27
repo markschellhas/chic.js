@@ -1,1 +1,1 @@
-export { RoutesTable } from "./renderedRouteTable.js";
+export { RoutesTable } from "./renderedRoutesTable.js";
