@@ -12,6 +12,9 @@ or in your project directory:
 ```bash
 npm install chic.js
 ```
+## [1.5.0] - 2025-12-13
+
+- Swaps out `create-svelte` (deprecated) for `sv` package instead 
 
 ## [1.4.3] - 2024-07-17
 

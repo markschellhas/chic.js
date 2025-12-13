@@ -38,7 +38,7 @@ prog
         console.log('\x1b[36m%s\x1b[0m', `• Creating a new Sveltekit project named ${name}`);
         const [ isStyled, styleFrameworkName, styleInstallCommand, styleDocsURL ] = styledBy(options);
         
-        const createSvelteProcess = spawn('npm', ['create', 'svelte@latest', name], {
+        const createSvelteProcess = spawn('npx', ['sv', 'create', name], {
             stdio: 'inherit', // this will show the live output of the command
             shell: true
         });
