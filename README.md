@@ -1,3 +1,5 @@
+![Chic.js](images/chicjs.png "Chic.js")
+
 # About Chic.js
 
 Chic.js is a rapid prototyping tool for Sveltekit, created and maintained by Mark Schellhas.  
