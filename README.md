@@ -1,6 +1,9 @@
 # About Chic.js
 
-Chic.js is a rapid prototyping tool for Sveltekit. Use the CLI to scaffold your app quickly, and focus on the fun stuff.  
+Chic.js is a rapid prototyping tool for Sveltekit, created and maintained by Mark Schellhas.  
+Use this CLI to scaffold your app quickly, and focus on the fun stuff.   
+  
+
 📺 Watch a walkthrough video by [Svelte Safari](https://www.youtube.com/@SvelteSafari) here: https://www.youtube.com/watch?v=AZdUtR4GYtE
 
 
@@ -39,3 +42,6 @@ Chic.js adds a `/routes` endpoint to your app, which shows all the routes in you
 | `chic debug status` | Shows the status of `CHIC_DEBUG` in your `.env` file |
 | `chic debug ON` | Sets `CHIC_DEBUG` value to `ON`. When `ON`, the routes endpoint will be active |
 | `chic debug OFF` | Sets `CHIC_DEBUG` value to `OFF`. When `OFF`, the routes endpoint will be inactive |
+
+---
+Copyright (c) 2025-2026 Mark Schellhas and contributors. All Rights Reserved.
