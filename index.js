@@ -254,22 +254,27 @@ prog
     
 prog.parse(process.argv);
 
+const STYLE_COMMANDS = {
+    'tailwind':   ['npx', ['svelte-add', 'tailwindcss']],
+    'bootstrap':  ['npx', ['svelte-add', 'bootstrap']],
+    'bulma':      ['npx', ['svelte-add', 'bulma']],
+};
+
 /**
  * 
  * @param {String} styleFrameworkName 
- * @param {Array<string>} styleInstallCommand 
  * @param {String} styleDocsURL 
  */
-function addStylesToProject(styleFrameworkName, styleInstallCommand, styleDocsURL) {
+function addStylesToProject(styleFrameworkName, styleDocsURL) {
+    const cmd = STYLE_COMMANDS[styleFrameworkName];
+    if (!cmd) {
+        console.error(`Unknown style framework: ${styleFrameworkName}`);
+        return;
+    }
     console.log('\x1b[36m%s\x1b[0m', `• Styling the project with ${styleFrameworkName}`);
     console.log('\x1b[36m%s\x1b[0m', `• Installing ${styleFrameworkName}...`);
-    let styleCmnd = styleInstallCommand.split(' ');
-    let styledOptions = styleCmnd.slice(1);
-    console.log(styleCmnd);
-    console.log(styledOptions);
-    const installStyleProcess = spawn(styleCmnd[0], styledOptions, {
-        stdio: 'inherit',
-        shell: true
+    const installStyleProcess = spawn(cmd[0], cmd[1], {
+        stdio: 'inherit'
     });
     
     installStyleProcess.on('error', (error) => {
