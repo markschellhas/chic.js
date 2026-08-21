@@ -1,1 +1,8 @@
 test
+.idea
+.github
+.nvmrc
+babel.config.json
+jest.config.json
+CODEOWNERS
+*.tgz
