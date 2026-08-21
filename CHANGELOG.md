@@ -14,6 +14,11 @@ npm install chic.js
 ```
 
 
+## [1.5.2] - 2026-08-21
+
+- Upgrades development dependencies: Babel 7.29.7 and Jest 30.4
+- Security upgrades on transitive dependencies
+
 ## [1.5.1] - 2025-12-31
 
 - Security upgrades on dependencies

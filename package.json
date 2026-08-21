@@ -1,6 +1,6 @@
 {
   "name": "chic.js",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "CLI for rapidly scaffolding SvelteKit apps",
   "main": "index.js",
   "bin": {
@@ -36,9 +36,9 @@
     "sade": "^1.8.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.9",
-    "@babel/preset-env": "^7.22.9",
-    "babel-jest": "^29.6.2",
-    "jest": "^29.6.2"
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "babel-jest": "^30.4.1",
+    "jest": "^30.4.2"
   }
 }
