@@ -13,6 +13,8 @@ Use this CLI to scaffold your app quickly, and focus on the fun stuff.
 
 ## Installation
 
+Requires Node.js `^22.18.0` or `>=24.11.0`.
+
 `npm install -g chic.js`
 
 ## Usage
