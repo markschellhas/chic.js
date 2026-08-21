@@ -10,6 +10,9 @@
   "scripts": {
     "test": "jest"
   },
+  "engines": {
+    "node": "^22.18.0 || >=24.11.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/markschellhas/chic.js.git"
@@ -36,8 +39,8 @@
     "sade": "^1.8.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.29.7",
-    "@babel/preset-env": "^7.29.7",
+    "@babel/core": "^8.0.1",
+    "@babel/preset-env": "^8.0.2",
     "babel-jest": "^30.4.1",
     "jest": "^30.4.2"
   }
