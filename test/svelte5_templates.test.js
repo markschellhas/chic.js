@@ -1,8 +1,8 @@
 import { compile } from 'svelte/compiler';
 
-import { generateFormComponentContent } from '../lib/functions.js';
 import {
-  destroyButtonTemplate
+  destroyButtonTemplate,
+  generateFormComponentTemplate
 } from '../lib/templates/component_templates.js';
 import { routePageTemplate } from '../lib/templates/page_templates.js';
 import {
@@ -22,7 +22,7 @@ function compileSvelte(source, filename) {
 
 describe('Svelte 5 templates', () => {
   it('compiles the generated form component in runes mode', () => {
-    const source = generateFormComponentContent(
+    const source = generateFormComponentTemplate(
       'title:string description:text cover:file'
     );
 
