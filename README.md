@@ -49,7 +49,7 @@ chic upgrade --force             # adopt Drizzle metadata in a legacy project
 chic doctor
 ```
 
-`chic new` delegates SvelteKit and add-on setup to the official `sv` CLI.
+`chic new` delegates SvelteKit and add-on setup to the tested `sv@0.17.0` CLI.
 Drizzle uses SQLite with `better-sqlite3`. Additional `sv` add-ons can be
 passed with `--add`.
 
