@@ -1,6 +1,6 @@
 import chicConfig from '../chic.json';
-import { RoutesTable } from './RoutesTable.js';
-import { CHIC_DEBUG } from '$env/static/private';
+import { env } from '$env/dynamic/private';
+import { RoutesTable } from './RouteTable.js';
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
@@ -10,8 +10,8 @@ export async function handle({ event, resolve }) {
     const errorCode = isRoutesPath ? 200 : 404;
 
     let responseMessage;
-    if (CHIC_DEBUG === "ON" || CHIC_DEBUG === "OFF") {
-      responseMessage = CHIC_DEBUG === "ON" ? RoutesTable(chicConfig.routes, isError, errorCode) : "Page not available.";
+    if (env.CHIC_DEBUG === "ON" || env.CHIC_DEBUG === "OFF") {
+      responseMessage = env.CHIC_DEBUG === "ON" ? RoutesTable(chicConfig.routes, isError, errorCode) : "Page not available.";
     } else {
       responseMessage = RoutesTable(chicConfig.routes, isError, errorCode);
     }

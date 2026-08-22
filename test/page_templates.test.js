@@ -22,7 +22,7 @@ describe("page_templates", () => {
     it("returns the expected HTML", () => {
       const resourceName = "posts";
       const expected = `
-    {#each Object.entries(data.post) as [key, val]}
+    {#each Object.entries(data.post) as [key, val] (key)}
       <p><b>{key}:</b> {val}</p>
     {/each}
 `;
@@ -48,7 +48,7 @@ describe("page_templates", () => {
       const firstFieldName = "title";
       const expected = `
     <ul>
-    {#each data.posts as item}
+    {#each data.posts as item (item.id)}
       <li>
           <a href={"/posts/"+item.id}>{item.title}</a>
       </li>
