@@ -71,7 +71,7 @@ describe('Drizzle generator', () => {
   });
 
   it('keeps model-only generation free of page routes', async () => {
-    const root = fixture();
+    const root = fixture({ '@playwright/test': 'latest' });
     roots.push(root);
     const { plan } = buildModelPlan(root, 'Category', ['name:string'], {});
     await plan.execute();
@@ -80,6 +80,7 @@ describe('Drizzle generator', () => {
     expect(config.routes).toEqual([]);
     expect(fs.existsSync(path.join(root, 'src/routes/categories'))).toBe(false);
     expect(fs.existsSync(path.join(root, 'src/lib/server/categories.ts'))).toBe(true);
+    expect(fs.existsSync(path.join(root, 'tests/chic/categories.spec.ts'))).toBe(false);
   });
 
   it('reverses registered scaffold artifacts', async () => {
