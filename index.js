@@ -1,287 +1,269 @@
 #!/usr/bin/env node
 
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import sade from 'sade';
-
 import {
-    addModelToDBFile, createAPIRoutes, createController,
-    createModel, createRoutePages, init, createFormComponent, writeDeleteButtonComponent, createHooksServerFile, readConfig, addNewRouteOrComponent, getDebugValue, setDebugValue,
-    createSitemap
-} from './lib/functions.js';
-import { spawn } from 'child_process';
-import { destroyButtonTemplate } from './lib/templates/component_templates.js';
-import { CONSOLE_COLOR, styledBy } from './lib/helpers.js';
+  buildDestroyPlan,
+  buildMigrationPlan,
+  buildModelPlan,
+  buildScaffoldPlan,
+  buildSimplePlan,
+  findProjectRoot,
+  readConfig,
+  renderRouteList
+} from './lib/generator.js';
+import {
+  createProject,
+  doctor,
+  initializeProject,
+  projectRoot,
+  run,
+  runDatabaseCommand,
+  upgradeProject
+} from './lib/project.js';
+import { createSitemap } from './lib/functions.js';
 
-import { readFileSync } from 'fs';
+const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
+const prog = sade('chic').version(pkg.version);
 
-let pjson;
-try {
-    const pkgPath = new URL('./package.json', import.meta.url);
-    const pkgData = readFileSync(pkgPath);
-    pjson = JSON.parse(pkgData);
-} catch (err) {
-    console.error('Error reading package.json:', err);
+function generationOptions(options) {
+  return {
+    dryRun: options['dry-run'],
+    force: options.force,
+    skip: options.skip,
+    api: options.api
+  };
 }
 
+function fieldsFrom(first, options) {
+  return [first, ...(options._ || [])].filter(Boolean);
+}
 
-const prog = sade('chic');
+async function execute(label, callback) {
+  try {
+    console.log(`\n${label}`);
+    await callback();
+  } catch (error) {
+    console.error(`\nChic error: ${error.message}`);
+    process.exitCode = 1;
+  }
+}
+
+function addGenerationFlags(command) {
+  return command
+    .option('--dry-run', 'Print changes without writing files')
+    .option('--force', 'Overwrite generated files')
+    .option('--skip', 'Keep files that already exist');
+}
 
 prog
-    .version(pjson.version);
-
-prog
-    .command('new <name>')
-    .describe('Create a new Sveltekit app. To add styles, add "styled with tailwind", for example.')
-    .example('new myapp')
-    .example('new myapp styled with tailwind')
-    .action((name, options, opts) => {
-        console.log('\x1b[36m%s\x1b[0m', `• Creating a new Sveltekit project named ${name}`);
-        const [ isStyled, styleFrameworkName, styleInstallCommand, styleDocsURL ] = styledBy(options);
-        
-        const createSvelteProcess = spawn('npx', ['sv', 'create', name], {
-            stdio: 'inherit', // this will show the live output of the command
-            shell: true
-        });
-
-        createSvelteProcess.on('error', (error) => {
-            console.error(`Error creating the project: ${error}`);
-        });
-
-        createSvelteProcess.on('exit', (code) => {
-            if (code !== 0) {
-                console.error(`The process exited with code ${code}`);
-            } else {
-                console.log('Project created successfully!');
-                // Change directory in the Node.js process
-                process.chdir(path.join(process.cwd(), name));
-
-                // Run init function
-                init();
-
-
-                // Install sequelize
-                console.log(`> Installing sequelize in project ${name}`);
-                const installSequelizeProcess = spawn('npm', ['install', 'sequelize', '--save'], {
-                    stdio: 'inherit',
-                    shell: true
-                });
-
-                installSequelizeProcess.on('error', (error) => {
-                    console.error(`Error installing sequelize: ${error}`);
-                });
-
-                installSequelizeProcess.on('exit', (code) => {
-                    if (code !== 0) {
-                        console.error(`The process exited with code ${code}`);
-                    } else {
-                        console.log('Sequelize installed successfully');
-
-                        // Install Sqlite
-                        console.log(`> Installing sqlite3 in project ${name}`);
-                        const installSsqlite3Process = spawn('npm', ['install', 'sqlite3', '--save'], {
-                            stdio: 'inherit',
-                            shell: true
-                        });
-
-                        installSsqlite3Process.on('error', (error) => {
-                            console.error(`Error installing sqlite3: ${error}`);
-                        });
-
-                        installSsqlite3Process.on('exit', (code) => {
-                            if (code !== 0) {
-                                console.error(`The process exited with code ${code}`);
-                            } else {
-                                console.log('Sqlite3 installed successfully');
-                                console.log('\x1b[36m%s\x1b[0m', `----------------------------------------`);
-                                console.log("Project created successfully!");
-                                if (isStyled) {
-                                    addStylesToProject(styleFrameworkName, styleInstallCommand, styleDocsURL);
-                                }
-                                console.log(`
-                                
-🌟 Next steps:
---------------
-  1: cd ${name}
-  2: npm install
-  3: chic make <resource> <fields>
-  4: chic s
-
-                                `)
-                                console.log('\x1b[36m%s\x1b[0m', `To start the server run: chic s`);
-                                console.log(CONSOLE_COLOR.GREEN, `Donate to support us: https://ko-fi.com/sveltesafari`);
-                            }
-                        });
-                    }
-                });
-
-            }
-        });
+  .command('new <name>')
+  .describe('Create a TypeScript SvelteKit app with Drizzle and SQLite')
+  .option('--package-manager', 'Package manager: npm, pnpm, yarn, or bun', 'npm')
+  .option('--tailwind', 'Add Tailwind CSS')
+  .option('--auth', 'Add Better Auth')
+  .option('--playwright', 'Add Playwright')
+  .option('--vitest', 'Add Vitest')
+  .option('--add', 'Additional sv add-ons, comma separated')
+  .example('new bookstore --tailwind --auth')
+  .action((name, options) => execute(`Creating ${name}`, async () => {
+    const root = await createProject(name, {
+      packageManager: options['package-manager'],
+      tailwind: options.tailwind,
+      auth: options.auth,
+      playwright: options.playwright,
+      vitest: options.vitest,
+      addons: options.add ? String(options.add).split(',').filter(Boolean) : []
     });
+    console.log(`\nReady: ${root}`);
+    console.log(`  cd ${name}`);
+    console.log('  chic generate scaffold Book title:string author:string');
+    console.log('  chic db migrate');
+    console.log('  chic server');
+  }));
 
 prog
-    .command('add <what>')
-    .describe('Adds a new route or component to your project.\n Put a / in front to create a new route, otherwise it will create a new component.\n See examples below.')
-    .example('add /about')
-    .example('add Login')
-    .action((what, options, opts) => {
-        addNewRouteOrComponent(what);
+  .command('init')
+  .describe('Initialize Chic with Drizzle in an existing SvelteKit project')
+  .option('--no-install', 'Do not install Drizzle and Zod')
+  .option('--force', 'Adopt Drizzle metadata in a legacy Chic project')
+  .option('--package-manager', 'Package manager to use')
+  .action((options) => execute('Initializing Chic', async () => {
+    const root = findProjectRoot(process.cwd(), false);
+    await initializeProject(root, {
+      noInstall: options.install === false,
+      force: options.force,
+      packageManager: options['package-manager']
     });
+    console.log('Chic initialized with Drizzle + SQLite.');
+  }));
+
+const generate = addGenerationFlags(
+  prog
+    .command('generate <kind> <name> [field]')
+    .describe('Generate a scaffold, model, route, component, or migration')
+    .option('--api', 'API mode for scaffolds: rest, remote, or none', 'rest')
+    .example('generate scaffold Post title:string published:boolean:index')
+    .example('generate model Comment body:text post:references')
+    .example('generate route /about')
+);
+
+generate.action((kind, name, field, options) => execute(`Generating ${kind} ${name}`, async () => {
+  const root = projectRoot();
+  let built;
+  if (kind === 'scaffold' || kind === 'resource') {
+    built = buildScaffoldPlan(root, name, fieldsFrom(field, options), generationOptions(options));
+  } else if (kind === 'model') {
+    built = buildModelPlan(root, name, fieldsFrom(field, options), generationOptions(options));
+  } else if (kind === 'route' || kind === 'component') {
+    built = buildSimplePlan(root, kind, name, generationOptions(options));
+  } else if (kind === 'migration') {
+    built = buildMigrationPlan(root, name, options.sql, generationOptions(options));
+  } else {
+    throw new Error('Generators: scaffold, model, route, component, migration.');
+  }
+  await built.plan.execute();
+  if (built.names) {
+    console.log(`\nVisit /${built.names.plural}`);
+    console.log('Run `chic db migrate` to apply the generated migration.');
+  }
+}));
+
+addGenerationFlags(
+  prog
+    .command('make <name> [field]')
+    .describe('Alias for `generate scaffold`')
+    .option('--api', 'API mode: rest, remote, or none', 'rest')
+    .example('make Book title:string author:string')
+).action((name, field, options) => execute(`Scaffolding ${name}`, async () => {
+  const built = buildScaffoldPlan(
+    projectRoot(),
+    name,
+    fieldsFrom(field, options),
+    generationOptions(options)
+  );
+  await built.plan.execute();
+  console.log(`\nVisit /${built.names.plural} after running \`chic db migrate\`.`);
+}));
+
+addGenerationFlags(
+  prog
+    .command('destroy <kind> <name>')
+    .describe('Reverse a generated scaffold or model')
+    .example('destroy scaffold Book')
+).action((kind, name, options) => execute(`Destroying ${kind} ${name}`, async () => {
+  if (!['scaffold', 'resource', 'model'].includes(kind)) {
+    throw new Error('Destroy supports scaffold, resource, or model.');
+  }
+  const built = buildDestroyPlan(projectRoot(), name, generationOptions(options));
+  await built.plan.execute();
+}));
 
 prog
-    .command('debug <command>')
-    .describe('Checks and sets CHIC_DEBUG mode. If ON, the routes endpoint will be active. Be sure to set CHIC_DEBUG=OFF in your .env file before deploying.')
-    .example('chic debug status')
-    .example('chic debug ON')
-    .example('chic debug OFF')
-    .action((command) => {
-        const v = command.toUpperCase();
-        switch (v) {
-            case "STATUS":
-                console.log(!getDebugValue() ? CONSOLE_COLOR.RED : CONSOLE_COLOR.BLUE, `• CHIC_DEBUG is currently ${!getDebugValue() ? "not specified in your .env file" : getDebugValue()}`);
-                break;
-            case "ON":
-                console.log('\x1b[36m%s\x1b[0m', `• Turning on debug mode...`);
-                setDebugValue("ON");
-                break;
-            case "OFF":
-                console.log('\x1b[36m%s\x1b[0m', `• Turning off debug mode...`);
-                setDebugValue("OFF");
-                break;
-            default:
-                console.log('\x1b[36m%s\x1b[0m', `CHIC_DEBUG is currently ${!getDebugValue() ? "not specified in your .env file" : getDebugValue()}`);
-                break;
-        }
-        
-    });
-
-
+  .command('add <what>')
+  .describe('Add a route (/about) or component (ContactForm)')
+  .option('--dry-run', 'Print changes without writing files')
+  .option('--force', 'Overwrite generated files')
+  .option('--skip', 'Keep existing files')
+  .action((what, options) => execute(`Adding ${what}`, async () => {
+    const kind = what.startsWith('/') ? 'route' : 'component';
+    const built = buildSimplePlan(projectRoot(), kind, what, generationOptions(options));
+    await built.plan.execute();
+  }));
 
 prog
-    .command('make <what> <options>')
-    .describe('Scaffolds a new MVC resource. Options are the field names of the model. You can also use a config file by running "chic make from file"')
-    // .option('-d, --database', 'What kind of database should be used?')
-    .example('make Guitar name:string brand:string price:number')
-    .example('make from file')
-    .action((what, options, opts) => {
-        console.log(`> Scaffolding a new ${what}`);
-        // console.log('> Model fields', options);
-        const allOptions = [options, ...opts._].join(' ');
-        if(what === "from" && options === "file") {
-            console.log('\x1b[36m%s\x1b[0m', `• Making from config file...`);
-            const config = readConfig();
-            for (let index = 0; index < config.models.length; index++) {
-                console.log(index);
-                const model = config.models[index];
-                console.log('\x1b[36m%s\x1b[0m', `• Making ${model.name}...`);
-                createModel(model.name, null, config.models[index].fields);
-                addModelToDBFile(model.name);
-                createFormComponent(model.name, ['new', '[id]/edit'], allOptions);
-                if (index === 0) writeDeleteButtonComponent(destroyButtonTemplate);
-                createRoutePages(model.name, ['', 'new', '[id]', '[id]/edit'], allOptions);
-                createAPIRoutes(model.name, ['', '[id]']);
-                createController(model.name);
-                createHooksServerFile();
-            }
-        } else {
-            createModel(what, allOptions, null);
-            addModelToDBFile(what);
-            createFormComponent(what, ['new', '[id]/edit'], allOptions);
-            writeDeleteButtonComponent(destroyButtonTemplate); // TODO: only create once.
-            createRoutePages(what, ['', 'new', '[id]', '[id]/edit'], allOptions);
-            createAPIRoutes(what, ['', '[id]']);
-            createController(what);
-            createHooksServerFile();
-        }
-
-    });
+  .command('db <command>')
+  .describe('Database: generate, migrate, rollback, reset, seed, studio, console')
+  .example('db migrate')
+  .example('db rollback')
+  .action((command) => execute(`Database ${command}`, async () => {
+    await runDatabaseCommand(projectRoot(), command);
+  }));
 
 prog
-    .command('routes')
-    .describe('Updates routes.')
-    // .option('-d, --database', 'What kind of database should be used?')
-    .action((what, options, opts) => {
-        createHooksServerFile();
-    });
+  .command('routes')
+  .describe('List registered routes')
+  .action(() => execute('Routes', async () => {
+    const config = readConfig(projectRoot());
+    console.log(renderRouteList(config) || 'No routes registered.');
+    console.log('\nBrowser inspector: /__chic/routes');
+  }));
 
 prog
-    .command('s')
-    .describe('Starts the development server')
-    .action(() => {
-        console.log(`> Running development server`);
-        console.log("");
-        console.log('\x1b[36m%s\x1b[0m', `To stop server, hit Ctrl+C`);
-        const runServerProcess = spawn('npm', ['run', 'dev'], {
-            stdio: 'inherit', // this will show the live output of the command
-            shell: true
-        });
-
-        runServerProcess.on('error', (error) => {
-            console.error(`Error creating the project: ${error}`);
-        });
-
-        runServerProcess.on('exit', (code) => {
-            if (code !== 0) {
-                console.error(`The server stopped.`);
-            } else {
-                console.log('Server ran successfully.');
-            }
-        });
-
-    });
+  .command('debug <command>')
+  .describe('Show or set the production route inspector flag')
+  .action((command) => execute(`Debug ${command}`, async () => {
+    const root = projectRoot();
+    const envPath = path.join(root, '.env');
+    let env = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8') : '';
+    const current = env.match(/^CHIC_DEBUG=(.+)$/m)?.[1] || 'OFF';
+    if (command.toLowerCase() === 'status') {
+      console.log(`CHIC_DEBUG=${current}`);
+      return;
+    }
+    const value = command.toUpperCase();
+    if (!['ON', 'OFF'].includes(value)) throw new Error('Use: chic debug status|ON|OFF');
+    env = /^CHIC_DEBUG=/m.test(env)
+      ? env.replace(/^CHIC_DEBUG=.*$/m, `CHIC_DEBUG=${value}`)
+      : `${env}${env && !env.endsWith('\n') ? '\n' : ''}CHIC_DEBUG=${value}\n`;
+    fs.writeFileSync(envPath, env);
+    console.log(`CHIC_DEBUG=${value}`);
+  }));
 
 prog
-    .command('sitemap <url>')
-    .describe('Generates a sitemap.xml file for your project.')
-    .example('sitemap https://example.com')
-    .action((url) => {
-        createSitemap(url);
-    });
-    
-// if command not found, show help
+  .command('doctor')
+  .describe('Check project health and generated artifacts')
+  .action(() => execute('Chic doctor', async () => {
+    const checks = doctor(projectRoot());
+    for (const check of checks) {
+      console.log(`${check.ok ? '✓' : '✗'} ${check.name}: ${check.detail}`);
+    }
+    if (checks.some((check) => !check.ok)) process.exitCode = 1;
+  }));
+
 prog
-    .command('*', '', { default: true })
-    .action(() => {
-        console.log(CONSOLE_COLOR.BLUE, "╔═╗┬ ┬┬┌─┐  ┬┌─┐");
-	    console.log(CONSOLE_COLOR.BLUE, "║  ├─┤││    │└─┐");
-	    console.log(CONSOLE_COLOR.BLUE, "╚═╝┴ ┴┴└─┘o└┘└─┘");
-        console.log(CONSOLE_COLOR.BLUE, `Version: ${pjson.version}`);
-        console.log(CONSOLE_COLOR.BLUE, `Author: Mark Schellhas`);
-        console.log(CONSOLE_COLOR.BLUE, `For help, run chic --help`);
-        console.log(CONSOLE_COLOR.GREEN, `--------------------`);
-        console.log(CONSOLE_COLOR.GREEN, `Donate to support this project: https://ko-fi.com/sveltesafari`);
-        console.log(CONSOLE_COLOR.GREEN, `--------------------`);
-    });
-    
+  .command('upgrade')
+  .describe('Upgrade Chic project metadata and Drizzle tooling')
+  .option('--force', 'Confirm migration from legacy Sequelize metadata')
+  .action((options) => execute('Upgrading Chic', async () => {
+    const result = await upgradeProject(projectRoot(), { force: options.force });
+    console.log(result.message);
+  }));
+
+prog
+  .command('sitemap <url>')
+  .describe('Generate static/sitemap.xml from source routes')
+  .action((url) => execute('Generating sitemap', async () => {
+    await createSitemap(url);
+  }));
+
+prog
+  .command('server')
+  .describe('Start the SvelteKit development server')
+  .option('--open', 'Open the app in a browser')
+  .action((options) => execute('Starting development server', async () => {
+    const manager = (await import('./lib/project.js')).detectPackageManager(projectRoot());
+    const args = manager === 'npm'
+      ? ['run', 'dev', '--', ...(options.open ? ['--open'] : [])]
+      : ['run', 'dev', ...(options.open ? ['--open'] : [])];
+    await run(manager, args, { cwd: projectRoot() });
+  }));
+
+prog
+  .command('s')
+  .describe('Alias for `chic server`')
+  .action(() => execute('Starting development server', async () => {
+    const { detectPackageManager } = await import('./lib/project.js');
+    const root = projectRoot();
+    await run(detectPackageManager(root), ['run', 'dev'], { cwd: root });
+  }));
+
+prog
+  .command('*', '', { default: true })
+  .action(() => {
+    console.log(`Chic.js ${pkg.version} — Rails-like scaffolding for SvelteKit`);
+    console.log('Run `chic --help` for commands.');
+  });
+
 prog.parse(process.argv);
-
-/**
- * 
- * @param {String} styleFrameworkName 
- * @param {Array<string>} styleInstallCommand 
- * @param {String} styleDocsURL 
- */
-function addStylesToProject(styleFrameworkName, styleInstallCommand, styleDocsURL) {
-    console.log('\x1b[36m%s\x1b[0m', `• Styling the project with ${styleFrameworkName}`);
-    console.log('\x1b[36m%s\x1b[0m', `• Installing ${styleFrameworkName}...`);
-    let styleCmnd = styleInstallCommand.split(' ');
-    let styledOptions = styleCmnd.slice(1);
-    console.log(styleCmnd);
-    console.log(styledOptions);
-    const installStyleProcess = spawn(styleCmnd[0], styledOptions, {
-        stdio: 'inherit',
-        shell: true
-    });
-    
-    installStyleProcess.on('error', (error) => {
-        console.error(`Error installing ${styleFrameworkName}: ${error}`);
-    });
-
-    installStyleProcess.on('exit', (code) => {
-        if (code !== 0) {
-            console.error(`The process exited with code ${code}`);
-        } else {
-            console.log(`${styleFrameworkName} installed successfully`);
-            console.log('\x1b[36m%s\x1b[0m', `• For more info: ${styleDocsURL}...`);
-        }
-    });
-}

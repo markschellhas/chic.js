@@ -36,6 +36,7 @@
     "url": "https://ko-fi.com/sveltesafari"
   },
   "dependencies": {
+    "pluralize": "^8.0.0",
     "sade": "^1.8.1"
   },
   "devDependencies": {
