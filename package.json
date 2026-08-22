@@ -1,8 +1,12 @@
 {
   "name": "chic.js",
-  "version": "1.5.2",
+  "version": "2.0.0",
   "description": "CLI for rapidly scaffolding SvelteKit apps",
   "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./ui": "./ui/index.js"
+  },
   "bin": {
     "chic": "./index.js"
   },
@@ -36,12 +40,14 @@
     "url": "https://ko-fi.com/sveltesafari"
   },
   "dependencies": {
+    "pluralize": "^8.0.0",
     "sade": "^1.8.1"
   },
   "devDependencies": {
     "@babel/core": "^8.0.1",
     "@babel/preset-env": "^8.0.2",
     "babel-jest": "^30.4.1",
-    "jest": "^30.4.2"
+    "jest": "^30.4.2",
+    "svelte": "^5.56.10"
   }
 }

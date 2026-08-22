@@ -19,7 +19,9 @@ export const actions = {
             })
             .catch(err => {
                 console.log('cat failed to create');
-                return fail(err);
+                return fail(500, {
+                    message: err instanceof Error ? err.message : 'Failed to create cat'
+                });
             });
     },
     destroy: async ({ request }) => {
@@ -32,7 +34,9 @@ export const actions = {
             })
             .catch(err => {
                 console.log('cat failed to destroy');
-                return fail(err);
+                return fail(500, {
+                    message: err instanceof Error ? err.message : 'Failed to destroy cat'
+                });
             });
     }
 };
@@ -78,7 +82,9 @@ export const actions = {
             })
             .catch(err => {
                 console.log('cat failed to update');
-                return fail(err);
+                return fail(500, {
+                    message: err instanceof Error ? err.message : 'Failed to update cat'
+                });
             });
     }
 };

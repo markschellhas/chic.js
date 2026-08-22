@@ -17,6 +17,10 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
       - run: npm ci
+      - name: Verify release tag matches package version
+        run: |
+          VERSION="v$(node -p "require('./package.json').version")"
+          test "$GITHUB_REF_NAME" = "$VERSION" || test "$GITHUB_REF_NAME" = "${VERSION#v}"
       - run: npm test
 
   publish-npm:

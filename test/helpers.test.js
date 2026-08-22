@@ -1,5 +1,5 @@
 
-import { pluralize, singularize, capitalize, getNamespaces, transformFieldsToObject, styledBy, transformYamlModelsAndFields } from '../lib/helpers.js';
+import { pluralize, singularize, capitalize, getNamespaces, transformFieldsToObject, styledBy } from '../lib/helpers.js';
 
 describe('pluralize', () => {
   it('should add an "s" to the end of a word if it does not already end in "s"', () => {
