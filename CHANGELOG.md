@@ -13,7 +13,7 @@ or in your project directory:
 npm install chic.js
 ```
 
-## [2.0.0] - Unreleased
+## [2.0.0] - 2026-08-22
 
 - Makes Drizzle with SQLite the default persistence stack
 - Generates TypeScript and Svelte 5 CRUD resources with Zod validation
