@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sade from 'sade';
 import {
+  buildControllerPlan,
   buildDestroyPlan,
   buildMigrationPlan,
   buildModelPlan,
@@ -104,6 +105,7 @@ const generate = addGenerationFlags(
     .command('generate <kind> <name> [field]')
     .describe('Generate a scaffold, model, route, component, or migration')
     .option('--api', 'API mode for scaffolds: rest, remote, or none', 'rest')
+    .option('--sql', 'Initial SQL for a custom migration')
     .example('generate scaffold Post title:string published:boolean:index')
     .example('generate model Comment body:text post:references')
     .example('generate route /about')
@@ -112,16 +114,39 @@ const generate = addGenerationFlags(
 generate.action((kind, name, field, options) => execute(`Generating ${kind} ${name}`, async () => {
   const root = projectRoot();
   let built;
-  if (kind === 'scaffold' || kind === 'resource') {
+  if (kind === 'from') {
+    const sourcePath = path.resolve(root, name);
+    const source = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
+    if (!Array.isArray(source.models)) throw new Error('Config file must contain a models array.');
+    for (const model of source.models) {
+      const tokens = model.fields.map((entry) => {
+        const modifiers = [
+          entry.required === false ? 'optional' : null,
+          entry.unique ? 'unique' : null,
+          entry.index ? 'index' : null
+        ].filter(Boolean);
+        return `${entry.name}:${entry.type || 'string'}${modifiers.length ? `:${modifiers.join(',')}` : ''}`;
+      });
+      const generated = buildScaffoldPlan(root, model.name, tokens, {
+        ...generationOptions(options),
+        api: model.api || options.api
+      });
+      await generated.plan.execute();
+    }
+    console.log(`Generated ${source.models.length} resources.`);
+    return;
+  } else if (kind === 'scaffold' || kind === 'resource') {
     built = buildScaffoldPlan(root, name, fieldsFrom(field, options), generationOptions(options));
   } else if (kind === 'model') {
     built = buildModelPlan(root, name, fieldsFrom(field, options), generationOptions(options));
+  } else if (kind === 'controller' || kind === 'service') {
+    built = buildControllerPlan(root, name, generationOptions(options));
   } else if (kind === 'route' || kind === 'component') {
     built = buildSimplePlan(root, kind, name, generationOptions(options));
   } else if (kind === 'migration') {
     built = buildMigrationPlan(root, name, options.sql, generationOptions(options));
   } else {
-    throw new Error('Generators: scaffold, model, route, component, migration.');
+    throw new Error('Generators: scaffold, model, controller, route, component, migration, from.');
   }
   await built.plan.execute();
   if (built.names) {

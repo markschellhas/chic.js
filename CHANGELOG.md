@@ -13,6 +13,18 @@ or in your project directory:
 npm install chic.js
 ```
 
+## [2.0.0] - Unreleased
+
+- Makes Drizzle with SQLite the default persistence stack
+- Generates TypeScript and Svelte 5 CRUD resources with Zod validation
+- Adds atomic generation, dry runs, collision policies, and scaffold destruction
+- Adds paired SQL migrations with migrate, rollback, reset, seed, studio, and console commands
+- Adds model, controller, route, component, migration, and config-file generators
+- Adds REST, no-API, and experimental remote-function scaffold modes
+- Adds `chic doctor`, safe route inspection, source-based sitemaps, and modern `sv` add-ons
+- Adds generated-project integration coverage and pull-request CI
+- Preserves existing SvelteKit hooks and defaults production debug routes to off
+
 
 ## [1.5.2] - 2026-08-21
 
