@@ -95,6 +95,9 @@ describe('Drizzle generator', () => {
     expect(config.routes).toEqual([]);
     expect(fs.existsSync(path.join(root, 'src/routes/posts'))).toBe(false);
     expect(fs.readFileSync(path.join(root, 'src/lib/server/db/schema.ts'), 'utf8')).not.toContain('chic:Post');
+    const migrations = fs.readdirSync(path.join(root, 'drizzle/chic'));
+    expect(migrations.some((file) => file.includes('_create_posts.up.sql'))).toBe(true);
+    expect(migrations.some((file) => file.includes('_drop_posts.up.sql'))).toBe(true);
   });
 
   it('supports dry runs and blocks path traversal', async () => {

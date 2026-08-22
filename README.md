@@ -72,6 +72,10 @@ chic add ContactForm              # component shorthand
 chic destroy scaffold Post
 ```
 
+Destroy removes generated application files but preserves migration history. It
+adds a reversible `drop_<table>` migration; run `chic db migrate` when you are
+ready to remove the table.
+
 All mutating generators support:
 
 | Option | Behavior |
