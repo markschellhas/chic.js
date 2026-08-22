@@ -10,10 +10,10 @@ import {
   parseFields
 } from '../lib/generator.js';
 
-function fixture() {
+function fixture(dependencies = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'chic-generator-'));
   fs.mkdirSync(path.join(root, 'src/lib/server/db'), { recursive: true });
-  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ type: 'module' }));
+  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify({ type: 'module', devDependencies: dependencies }));
   fs.writeFileSync(path.join(root, 'src/lib/server/db/schema.ts'), '// schema\n');
   fs.writeFileSync(path.join(root, 'chic.json'), JSON.stringify({
     version: 2,
@@ -47,6 +47,7 @@ describe('Drizzle generator', () => {
       expect.objectContaining({ name: 'published', type: 'boolean', index: true, required: false })
     ]);
     expect(() => parseFields(['name:mystery'])).toThrow('Unknown field type');
+    expect(() => parseFields(['avatar:file'])).toThrow('Unknown field type');
   });
 
   it('creates a complete TypeScript scaffold and one config transaction', async () => {
@@ -103,6 +104,14 @@ describe('Drizzle generator', () => {
     await generated.plan.execute();
     expect(fs.existsSync(path.join(root, 'src/lib/components/Card.svelte'))).toBe(false);
     expect(() => buildSimplePlan(root, 'route', '/../secret', {})).toThrow('Invalid route path');
+  });
+
+  it('generates a CRUD browser test when Playwright is installed', async () => {
+    const root = fixture({ '@playwright/test': 'latest' });
+    roots.push(root);
+    const { plan } = buildScaffoldPlan(root, 'Post', ['title:string'], {});
+    await plan.execute();
+    expect(fs.existsSync(path.join(root, 'tests/chic/posts.spec.ts'))).toBe(true);
   });
 });
 

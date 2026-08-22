@@ -92,7 +92,7 @@ name:type:modifier,modifier
 Types:
 
 `string`, `text`, `integer`, `number`, `float`, `boolean`, `date`,
-`datetime`, `json`, `file`, and `references`.
+`datetime`, `json`, and `references`.
 
 Modifiers:
 
@@ -107,7 +107,8 @@ author:references
 ```
 
 `references` creates an integer foreign-key column. Generate the referenced
-model first.
+model first. File uploads are intentionally not treated as plain database
+fields; add a storage integration and store its resulting URL as a `string`.
 
 ### Database
 
@@ -204,7 +205,9 @@ npm test
 ```
 
 CI runs tests and syntax checks for every pull request. Integration tests
-generate and destroy complete resources in temporary projects.
+generate and destroy complete resources in temporary projects. When Playwright
+is installed, each scaffold also includes a CRUD browser test under
+`tests/chic`.
 
 ---
 
