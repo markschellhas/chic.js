@@ -10,6 +10,13 @@ describe('release version', () => {
     expect(packageLock.packages[''].version).toBe(packageJson.version);
   });
 
+  it('exposes the chic CLI from a valid bin filename', () => {
+    expect(packageJson.bin.chic).toBe('bin/chic.js');
+    expect(packageLock.packages[''].bin.chic).toBe('bin/chic.js');
+    expect(fs.existsSync(packageJson.bin.chic)).toBe(true);
+    expect(fs.readFileSync(packageJson.bin.chic, 'utf8')).toMatch(/^#!/);
+  });
+
   it('has a dated changelog entry for the package release', () => {
     expect(changelog).toMatch(
       new RegExp(`^## \\[${packageJson.version.replaceAll('.', '\\.')}\\] - \\d{4}-\\d{2}-\\d{2}$`, 'm')

@@ -20,6 +20,7 @@ jobs:
       - run: npm ci
       - run: npm test -- --runInBand
       - run: node --check index.js
+      - run: node --check bin/chic.js
       - run: node --check lib/generator.js
       - run: node --check lib/project.js
       - run: node --check lib/introspect.js
