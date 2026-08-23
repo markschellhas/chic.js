@@ -6,17 +6,29 @@ const palette = {
   cyan: [125, 207, 255],
   turquoise: [42, 195, 222],
   pink: [247, 118, 142],
+  gold: [255, 199, 64],
   foreground: [192, 202, 245],
   muted: [86, 95, 137]
 };
 
 const logo = [
-  ' ██████╗██╗  ██╗██╗ ██████╗',
-  '██╔════╝██║  ██║██║██╔════╝',
-  '██║     ███████║██║██║     ',
-  '██║     ██╔══██║██║██║     ',
-  '╚██████╗██║  ██║██║╚██████╗',
-  ' ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝'
+  { text: '                 /\\_/\\', color: 'violet' },
+  { text: '                / o o \\', color: 'cyan' },
+  { text: '               (   ^   )', color: 'foreground' },
+  { text: '                \\ \\_/ /       __', color: 'pink' },
+  { text: "             .---`---'---.   /()\\", color: 'gold' },
+  { text: '            /    /| |\\    \\_/ /', color: 'gold' },
+  { text: '           /_   /_| |_\\    __/', color: 'gold' },
+  { text: '          / /  /  |  \\    \\', color: 'blue' },
+  { text: '         /_/  /___|___\\    \\_\\', color: 'blue' },
+  { text: '             /_/   \\_\\', color: 'violet' },
+  { text: '' },
+  { text: ' ██████╗██╗  ██╗██╗ ██████╗     ██╗███████╗', color: 'gold' },
+  { text: '██╔════╝██║  ██║██║██╔════╝     ██║██╔════╝', color: 'gold' },
+  { text: '██║     ███████║██║██║          ██║███████╗', color: 'pink' },
+  { text: '██║     ██╔══██║██║██║     ██   ██║╚════██║', color: 'pink' },
+  { text: '╚██████╗██║  ██║██║╚██████╗╚█████╔╝███████║', color: 'violet' },
+  { text: ' ╚═════╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚════╝ ╚══════╝', color: 'blue' }
 ];
 
 function ansi(rgb, text, { bold = false, dim = false } = {}) {
@@ -32,16 +44,10 @@ export function supportsColor(stream = process.stdout, env = process.env) {
 
 export function renderInfoScreen(version, { color = supportsColor() } = {}) {
   const paint = color ? ansi : (_rgb, text) => text;
-  const logoColors = [
-    palette.violet,
-    palette.violet,
-    palette.blue,
-    palette.cyan,
-    palette.turquoise,
-    palette.pink
-  ];
   const wordmark = logo
-    .map((line, index) => paint(logoColors[index], line, { bold: true }))
+    .map(({ text, color }) => (
+      text ? paint(palette[color], text, { bold: true }) : text
+    ))
     .join('\n');
 
   return [

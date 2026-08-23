@@ -4,7 +4,9 @@ describe('default info screen', () => {
   it('renders the Chic wordmark, tagline, quote, and version', () => {
     const output = renderInfoScreen('2.0.0', { color: false });
 
-    expect(output).toContain(' ██████╗██╗  ██╗██╗ ██████╗');
+    expect(output).toContain('/\\_/\\');
+    expect(output).toContain('/()\\');
+    expect(output).toContain(' ██████╗██╗  ██╗██╗ ██████╗     ██╗███████╗');
     expect(output).toContain('SvelteKit for agents.');
     expect(output).toContain('Crafted by Mark Schellhas · Inspired by Rails');
     expect(output).toContain('“Work is love made visible.”');
