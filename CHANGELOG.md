@@ -13,6 +13,10 @@ or in your project directory:
 npm install chic.js
 ```
 
+## [2.1.1] - 2026-08-23
+
+- Adds a Tokyo Night CLI welcome screen with a cat mascot, `CHIC.JS` wordmark, and adaptive terminal colors
+
 ## [2.1.0] - 2026-08-23
 
 - Adds `chic generate from-db` to scaffold full CRUD resources from an existing SQLite database
