@@ -65,8 +65,13 @@ chic generate route /about
 chic generate component ContactForm
 chic generate migration AddStatusToPosts
 chic generate from resources.json
+chic generate from-db
+chic generate from-db --only books,authors
+chic generate from-db --except users,sessions
+chic generate from database --only posts --api=none
 
 chic make Post title:string       # scaffold alias
+chic make from database           # scaffold alias for from-db
 chic add /about                   # route shorthand
 chic add ContactForm              # component shorthand
 chic destroy scaffold Post
@@ -187,6 +192,29 @@ Batch generation accepts the same shape:
 ```
 
 Run it with `chic generate from resources.json`.
+
+### Scaffold from an existing database
+
+If a SQLite database already exists, Chic can introspect its tables and generate
+full CRUD pages, forms, services, Drizzle schema, and optional REST or remote
+APIs. Existing tables are not rebuilt, so no `CREATE TABLE` migrations are
+written.
+
+```sh
+chic generate from-db
+chic generate from-db --only books,authors
+chic generate from-db --except users,sessions
+chic generate from-db --database ./legacy.db --api=remote
+chic generate from-db books authors
+```
+
+`--only` limits generation to the named tables. `--except` skips tables.
+System tables such as `sqlite_sequence` and `__chic_migrations` are always
+ignored. Tables need an integer `id` primary key; `id`, `created_at`, and
+`updated_at` are treated as managed columns.
+
+The database path comes from `--database`, then `DATABASE_URL`, then `chic.db`
+in the project root.
 
 ## Upgrading from Chic 1
 

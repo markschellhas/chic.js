@@ -1,6 +1,6 @@
 {
   "name": "chic.js",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "CLI for rapidly scaffolding SvelteKit apps",
   "main": "index.js",
   "exports": {
@@ -8,7 +8,7 @@
     "./ui": "./ui/index.js"
   },
   "bin": {
-    "chic": "./index.js"
+    "chic": "bin/chic.js"
   },
   "type": "module",
   "scripts": {
