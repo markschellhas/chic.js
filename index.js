@@ -6,6 +6,7 @@ import sade from 'sade';
 import {
   buildControllerPlan,
   buildDestroyPlan,
+  buildFromDatabasePlan,
   buildMigrationPlan,
   buildModelPlan,
   buildScaffoldPlan,
@@ -14,6 +15,7 @@ import {
   readConfig,
   renderRouteList
 } from './lib/generator.js';
+import { parseTableList } from './lib/introspect.js';
 import {
   createProject,
   doctor,
@@ -40,6 +42,26 @@ function generationOptions(options) {
 
 function fieldsFrom(first, options) {
   return [first, ...(options._ || [])].filter(Boolean);
+}
+
+function fromDatabaseOptions(options, positional = []) {
+  const only = parseTableList(options.only);
+  return {
+    ...generationOptions(options),
+    only: only.length ? only : positional.filter(Boolean),
+    except: parseTableList(options.except),
+    database: options.database
+  };
+}
+
+async function scaffoldFromDatabase(root, options, positional = []) {
+  const built = await buildFromDatabasePlan(root, fromDatabaseOptions(options, positional));
+  await built.plan.execute();
+  console.log(`\nScaffolded ${built.tables.length} resource(s) from ${built.database}.`);
+  for (const table of built.tables) {
+    console.log(`  ${table.names.model} <- ${table.table}  /${table.names.plural}`);
+  }
+  console.log('Existing tables were left unchanged; no CREATE TABLE migrations were written.');
 }
 
 async function execute(label, callback) {
@@ -101,21 +123,35 @@ prog
     console.log('Chic initialized with Drizzle + SQLite.');
   }));
 
-const generate = addGenerationFlags(
+function addFromDatabaseFlags(command) {
+  return command
+    .option('--only', 'Only these tables, comma-separated')
+    .option('--except', 'Skip these tables, comma-separated')
+    .option('--database', 'SQLite database file (defaults to DATABASE_URL or chic.db)');
+}
+
+const generate = addFromDatabaseFlags(addGenerationFlags(
   prog
-    .command('generate <kind> <name> [field]')
-    .describe('Generate a scaffold, model, route, component, or migration')
+    .command('generate <kind> [name] [field]')
+    .describe('Generate a scaffold, model, route, component, migration, or CRUD from an existing database')
     .option('--api', 'API mode for scaffolds: rest, remote, or none', 'rest')
     .option('--sql', 'Initial SQL for a custom migration')
     .example('generate scaffold Post title:string published:boolean:index')
     .example('generate model Comment body:text post:references')
+    .example('generate from-db --only books,authors')
+    .example('generate from database --except users')
     .example('generate route /about')
-);
+));
 
-generate.action((kind, name, field, options) => execute(`Generating ${kind} ${name}`, async () => {
+generate.action((kind, name, field, options) => execute(`Generating ${kind}${name ? ` ${name}` : ''}`, async () => {
   const root = projectRoot();
   let built;
+  if (kind === 'from-db' || (kind === 'from' && ['database', 'db'].includes(name))) {
+    await scaffoldFromDatabase(root, options, kind === 'from-db' ? fieldsFrom(name, options) : fieldsFrom(field, options));
+    return;
+  }
   if (kind === 'from') {
+    if (!name) throw new Error('Provide a resources JSON file or use `chic generate from database`.');
     const sourcePath = path.resolve(root, name);
     const source = JSON.parse(fs.readFileSync(sourcePath, 'utf8'));
     if (!Array.isArray(source.models)) throw new Error('Config file must contain a models array.');
@@ -137,17 +173,22 @@ generate.action((kind, name, field, options) => execute(`Generating ${kind} ${na
     console.log(`Generated ${source.models.length} resources.`);
     return;
   } else if (kind === 'scaffold' || kind === 'resource') {
+    if (!name) throw new Error('Resource name is required.');
     built = buildScaffoldPlan(root, name, fieldsFrom(field, options), generationOptions(options));
   } else if (kind === 'model') {
+    if (!name) throw new Error('Model name is required.');
     built = buildModelPlan(root, name, fieldsFrom(field, options), generationOptions(options));
   } else if (kind === 'controller' || kind === 'service') {
+    if (!name) throw new Error('Controller name is required.');
     built = buildControllerPlan(root, name, generationOptions(options));
   } else if (kind === 'route' || kind === 'component') {
+    if (!name) throw new Error(`${kind} name is required.`);
     built = buildSimplePlan(root, kind, name, generationOptions(options));
   } else if (kind === 'migration') {
+    if (!name) throw new Error('Migration name is required.');
     built = buildMigrationPlan(root, name, options.sql, generationOptions(options));
   } else {
-    throw new Error('Generators: scaffold, model, controller, route, component, migration, from.');
+    throw new Error('Generators: scaffold, model, controller, route, component, migration, from, from-db.');
   }
   await built.plan.execute();
   if (built.names) {
@@ -156,13 +197,22 @@ generate.action((kind, name, field, options) => execute(`Generating ${kind} ${na
   }
 }));
 
-addGenerationFlags(
+addFromDatabaseFlags(addGenerationFlags(
   prog
     .command('make <name> [field]')
-    .describe('Alias for `generate scaffold`')
+    .describe('Alias for `generate scaffold` or `generate from-db`')
     .option('--api', 'API mode: rest, remote, or none', 'rest')
     .example('make Book title:string author:string')
-).action((name, field, options) => execute(`Scaffolding ${name}`, async () => {
+    .example('make from database --only books')
+)).action((name, field, options) => execute(`Scaffolding ${name}`, async () => {
+  if (name === 'from-db' || (name === 'from' && ['database', 'db'].includes(field))) {
+    await scaffoldFromDatabase(
+      projectRoot(),
+      options,
+      name === 'from-db' ? fieldsFrom(field, options) : (options._ || [])
+    );
+    return;
+  }
   const built = buildScaffoldPlan(
     projectRoot(),
     name,
