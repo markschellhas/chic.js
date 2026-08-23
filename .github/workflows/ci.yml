@@ -22,4 +22,5 @@ jobs:
       - run: node --check index.js
       - run: node --check lib/generator.js
       - run: node --check lib/project.js
+      - run: node --check lib/introspect.js
 
