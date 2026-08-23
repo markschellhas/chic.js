@@ -13,7 +13,7 @@ or in your project directory:
 npm install chic.js
 ```
 
-## [Unreleased]
+## [2.1.0] - 2026-08-23
 
 - Adds `chic generate from-db` to scaffold full CRUD resources from an existing SQLite database
 - Adds `--only` and `--except` table filters, plus `--database` for an explicit SQLite file
