@@ -26,6 +26,7 @@ import {
   upgradeProject
 } from './lib/project.js';
 import { createSitemap } from './lib/functions.js';
+import { renderInfoScreen } from './ui/infoScreen.js';
 
 const pkg = JSON.parse(fs.readFileSync(new URL('./package.json', import.meta.url), 'utf8'));
 const prog = sade('chic').version(pkg.version);
@@ -337,8 +338,7 @@ prog
 prog
   .command('*', '', { default: true })
   .action(() => {
-    console.log(`Chic.js ${pkg.version} — Rails-like scaffolding for SvelteKit`);
-    console.log('Run `chic --help` for commands.');
+    console.log(renderInfoScreen(pkg.version));
   });
 
 prog.parse(process.argv);
